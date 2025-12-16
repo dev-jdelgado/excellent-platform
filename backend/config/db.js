@@ -1,29 +1,24 @@
 const mysql = require('mysql2');
 
-const isProduction = process.env.NODE_ENV === 'production';
-
-const dbConfig = {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,       // nozomi.proxy.rlwy.net
+  port: process.env.DB_PORT,       // 16266
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-};
 
-// Enable SSL ONLY in production
-if (isProduction) {
-  dbConfig.ssl = {
+  ssl: {
     rejectUnauthorized: false
-  };
-}
+  },
 
-const db = mysql.createConnection(dbConfig);
+  connectTimeout: 20000
+});
 
-db.connect((err) => {
+db.connect(err => {
   if (err) {
     console.error('DB connection failed:', err);
   } else {
-    console.log('MySQL connected successfully');
+    console.log('Connected to Railway MySQL');
   }
 });
 
