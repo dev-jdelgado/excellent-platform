@@ -14,10 +14,10 @@ exports.register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
     
         const sql = `
-            INSERT INTO students (first_name, last_name, email, password)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO students (first_name, last_name, email, password, created_at)
+            VALUES (?, ?, ?, ?, NOW())
         `;
-    
+     
         db.query(sql, [first_name, last_name, email, hashedPassword], (err) => {
             if (err) {
             console.error(err);
