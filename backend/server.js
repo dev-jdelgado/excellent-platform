@@ -6,12 +6,10 @@ const authRoutes = require('./routes/auth.routes');
 const app = express();
 
 // CORS
-const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:5173'
-];
+const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173'];
 app.use(cors({
   origin: allowedOrigins,
-  credentials: true
+  credentials: true,
 }));
 
 // Middleware
