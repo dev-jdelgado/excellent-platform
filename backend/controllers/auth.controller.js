@@ -4,32 +4,46 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
     try {
-        console.log('Register request body:', req.body); // <-- add this
-    
-        const { first_name, last_name, email, password } = req.body;
-        if (!first_name || !last_name || !email || !password) {
+        const {
+            name,
+            email,
+            password,
+            grade_level,
+            excel_expertise
+        } = req.body;
+
+        if (!name || !email || !password || !grade_level || !excel_expertise) {
             return res.status(400).json({ message: 'All fields are required' });
         }
-    
+
         const hashedPassword = await bcrypt.hash(password, 10);
-    
+
         const sql = `
-            INSERT INTO students (first_name, last_name, email, password, created_at)
-            VALUES (?, ?, ?, ?, NOW())
+            INSERT INTO students
+            (name, email, password, grade_level, excel_expertise, created_at)
+            VALUES (?, ?, ?, ?, ?, NOW())
         `;
-     
-        db.query(sql, [first_name, last_name, email, hashedPassword], (err) => {
-            if (err) {
-            console.error(err);
-            return res.status(400).json({ message: 'User already exists or invalid data' });
+
+        db.query(
+            sql,
+            [name, email, hashedPassword, grade_level, excel_expertise],
+            (err) => {
+                if (err) {
+                    console.error(err);
+                    return res
+                        .status(400)
+                        .json({ message: 'User already exists or invalid data' });
+                }
+
+                res.status(201).json({ message: 'Registration successful' });
             }
-            res.status(201).json({ message: 'Registration successful' });
-        });
+        );
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
-};  
+};
+
 
 exports.login = (req, res) => {
     try {
