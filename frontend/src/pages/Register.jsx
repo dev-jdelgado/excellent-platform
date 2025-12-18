@@ -28,7 +28,7 @@ export default function Register() {
         <div class="flex items-center justify-center min-h-screen bg-background">
             <form
                 onSubmit={submit}
-                class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md flex flex-col items-center"
+                class="bg-white sm:px-8 px-5 py-8 rounded-xl shadow-lg w-full max-w-md flex flex-col items-center mx-4"
             >
                 <div className="w-16 mb-4 bg-primary rounded-2xl p-2 text-white">
                     <svg
@@ -45,8 +45,8 @@ export default function Register() {
                         />
                     </svg>
                 </div>
-                <h1 class="text-3xl font-bold text-black mb-6 text-center">
-                    Welcome to EXCELent!
+                <h1 class="sm:text-3xl text-xl font-bold text-black mb-6 text-center">
+                    Welcome to EXCELlent!
                 </h1>
                 <div class="w-full">
                     <div class="flex flex-row items-center gap-1 mb-1">
