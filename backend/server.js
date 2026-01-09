@@ -2,10 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/auth.routes');
+const studentRoutes = require('./routes/student.routes'); 
 
 const app = express();
 
-// Allow frontend URL (local or Netlify)
 const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173'];
 app.use(cors({
     origin: allowedOrigins,
@@ -13,7 +13,9 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
 app.use('/api/auth', authRoutes);
+app.use('/api/students', studentRoutes); 
 
 app.get('/', (req, res) => res.send('EXCELLENT API is running'));
 

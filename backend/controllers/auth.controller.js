@@ -50,26 +50,29 @@ exports.login = (req, res) => {
         const { email, password } = req.body;
 
         db.query(
-        'SELECT * FROM students WHERE email = ?',
-        [email],
-        async (err, results) => {
-            if (err || results.length === 0)
-            return res.status(401).json({ message: 'Invalid credentials' });
+            'SELECT * FROM students WHERE email = ?',
+            [email],
+            async (err, results) => {
+                if (err || results.length === 0)
+                    return res.status(401).json({ message: 'Invalid credentials' });
 
-            const student = results[0];
-            const isMatch = await bcrypt.compare(password, student.password);
+                const student = results[0];
+                const isMatch = await bcrypt.compare(password, student.password);
 
-            if (!isMatch)
-            return res.status(401).json({ message: 'Invalid credentials' });
+                if (!isMatch)
+                    return res.status(401).json({ message: 'Invalid credentials' });
 
-            const token = jwt.sign(
-            { id: student.id },
-            process.env.JWT_SECRET,
-            { expiresIn: '1d' }
-            );
+                const token = jwt.sign(
+                    {
+                        id: student.id,
+                        name: student.name                    
+                    },
+                    process.env.JWT_SECRET,
+                    { expiresIn: '1d' }
+                );
 
-            res.json({ token, student });
-        }
+                res.json({ token, student });
+            }
         );
     } catch (error) {
         console.error(error);

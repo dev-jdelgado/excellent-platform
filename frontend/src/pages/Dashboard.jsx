@@ -1,34 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 export default function Dashboard() {
-    const navigate = useNavigate();
     const [student, setStudent] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-        // Decode JWT to get student info (simplified)
         const payload = JSON.parse(atob(token.split('.')[1]));
-        setStudent({ id: payload.id });
+        setStudent({
+            id: payload.id,
+            name: payload.name
+        });
         }
     }, []);
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        navigate('/login');
-    };
-
     return (
-        <div class="max-w-4xl mx-auto mt-20 text-center">
-        <h1 class="text-3xl font-bold">Student Dashboard</h1>
-        {student && <p class="mt-4">Welcome, student ID: {student.id}</p>}
-        <button
-            onClick={logout}
-            class="mt-6 px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        >
-            Logout
-        </button>
+        <>
+        <Navbar />
+
+        <div className="max-w-4xl mx-auto mt-20 text-center">
+            <h1 className="text-3xl font-bold">Student Dashboard</h1>
+
+            {student && (
+                <p className="mt-4">
+                    Welcome, <span className="font-semibold">{student.name}</span>
+                </p>
+            )}
         </div>
+        </>
     );
 }

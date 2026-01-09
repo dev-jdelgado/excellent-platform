@@ -1,0 +1,193 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
+import { QUESTIONS } from "./QUESTIONS";
+import { TrophyIcon } from "@heroicons/react/24/outline";
+
+
+const pickRandom = (arr, n) => {
+    const copy = [...arr];
+    const result = [];
+    for (let i = 0; i < n; i++) {
+        const index = Math.floor(Math.random() * copy.length);
+        result.push(copy.splice(index, 1)[0]);
+    }
+    return result;
+};
+
+export default function PreAssessment() {
+    const navigate = useNavigate();
+    const [questions, setQuestions] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [score, setScore] = useState(0);
+    const [selectedOption, setSelectedOption] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [answers, setAnswers] = useState([]); // Store user answers
+    const [showResults, setShowResults] = useState(false); // Show summary
+
+    // Fetch student + select questions
+    useEffect(() => {
+        const fetchStudent = async () => {
+        try {
+            const res = await api.get("/students/me");
+            const student = res.data;
+
+            if (student.is_completed_preassessment) {
+            navigate("/dashboard"); // Already completed → go to dashboard
+            return;
+            }
+
+            const selected = [
+            ...pickRandom(QUESTIONS["Cells & Worksheets"], 3),
+            ...pickRandom(QUESTIONS["Charts & Graphs"], 3),
+            ...pickRandom(QUESTIONS["Formatting Tools"], 2),
+            ...pickRandom(QUESTIONS["Sorting & Filtering"], 2),
+            ];
+
+            setQuestions(selected);
+            setLoading(false);
+        } catch (err) {
+            console.error(err);
+        }
+        };
+
+        fetchStudent();
+    }, [navigate]);
+
+    const handleNext = () => {
+        // Record the selected answer
+        const correct = selectedOption === questions[currentIndex].answer;
+        setAnswers((prev) => [
+        ...prev,
+        { question: questions[currentIndex].question, selected: selectedOption, correct, answer: questions[currentIndex].answer },
+        ]);
+
+        if (correct) setScore((prev) => prev + 1);
+
+        setSelectedOption("");
+
+        if (currentIndex + 1 < questions.length) {
+        setCurrentIndex((prev) => prev + 1);
+        } else {
+        // Show results instead of navigating immediately
+        setShowResults(true);
+        }
+    };
+
+    const handleSubmitResults = async () => {
+        try {
+        // Submit score to backend
+        await api.post("/students/pre-assessment/submit", { score });
+
+        // Navigate to dashboard after submission
+        navigate("/dashboard");
+        } catch (err) {
+        console.error(err);
+        }
+    };
+
+    if (loading) return <p>Loading...</p>;
+    if (!questions.length) return <p>No questions available</p>;
+
+    // Results summary view
+    if (showResults) {
+        return (
+        <div className="max-w-3xl mx-auto mt-10 mb-40">
+            <div className="mb-10">
+                <h1 className="text-3xl font-bold text-center flex items-center justify-center gap-2">
+                    <TrophyIcon className="w-8 h-8 text-primary" />
+                    Pre-Assessment Test Score
+                </h1>
+            </div>
+            <div className="p-6 rounded space-y-4">
+                <div className="flex flex-col items-center gap-2 p-6 border-2 border-primary bg-primary_background rounded-xl max-w-xl mx-auto">
+                    <div className="bg-primary rounded-full p-4">
+                        <TrophyIcon className="w-16 h-16 text-white" />
+                    </div>
+                    <p className="text-4xl font-bold">Congratulations!</p>
+                    <p className="text-lg">
+                        You scored <b>{score}</b> out of <b>{questions.length}</b>
+                    </p>
+                </div>
+
+
+                {answers.map((ans, idx) => (
+                    <div key={idx}>
+                        <div className={ans.correct ? "p-6 rounded-xl max-w-xl mx-auto border-l-4 border-l-primary border border-gray-200" : "p-6 rounded-xl max-w-xl mx-auto border-l-4 border-l-red-600 border border-gray-200"}>
+                            <p className="font-medium">Question {idx + 1}</p>
+                            <p className="mb-3">{ans.question}</p>
+                            <p className="font-semibold">
+                                Your Answer:{" "}
+                                <span className={ans.correct ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+                                {ans.selected || "No answer"}
+                                </span>
+                            </p>
+                            {!ans.correct && (
+                                <p className="font-semibold">Correct Answer: <span className="text-primary">{ans.answer}</span></p>
+                            )}
+                            </div>
+                    </div>
+                ))}
+
+                <div className="max-w-xl mx-auto">
+                    <button
+                        onClick={handleSubmitResults}
+                        className="mt-4 py-2 px-4 w-full bg-primary text-white font-semibold rounded hover:bg-secondary transition disabled:opacity-50"
+                    >
+                        Continue to Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+        );
+    }
+
+    // Quiz view
+    const currentQuestion = questions[currentIndex];
+
+    return (
+        <div className="flex justify-center items-center h-[100vh]">
+            <div>
+                <div className="mb-10">
+                    <h1 className="text-3xl font-bold text-center flex items-center justify-center gap-2">
+                        <TrophyIcon className="w-8 h-8 text-primary" />
+                        Pre-Assessment Test
+                    </h1>
+
+                    <p className="text-center text-gray-600 mt-2 mb-6">
+                        This short assessment helps evaluate your current knowledge level before starting the course.
+                    </p>
+                </div>
+                <div className="p-6 shadow-lg rounded-xl border-l-4 border-l-primary border border-gray-200 max-w-xl mx-auto">
+                    <p className="font-medium mb-4">
+                    Question {currentIndex + 1} of {questions.length}
+                    </p>
+                    <p className="mb-4">{currentQuestion.question}</p>
+
+                    <div className="space-y-2">
+                    {currentQuestion.options.map((opt, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setSelectedOption(opt)}
+                            className={`w-full text-left p-2 border rounded hover:bg-primary_background transition ${
+                                selectedOption === opt ? "bg-primary_background border-primary" : ""
+                            }`}
+                            >
+                            {opt}
+                        </button>
+                    ))}
+                    </div>
+
+                    <button
+                        onClick={handleNext}
+                        disabled={!selectedOption}
+                        className="mt-4 w-full py-2 bg-primary text-white font-semibold rounded hover:bg-secondary transition disabled:opacity-50"
+                        >
+                        {currentIndex + 1 === questions.length ? "Submit" : "Next"}
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    );
+}
