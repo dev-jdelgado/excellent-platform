@@ -4,13 +4,7 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
     try {
-        const {
-            name,
-            email,
-            password,
-            grade_level,
-            excel_expertise
-        } = req.body;
+        const { name, email, password, grade_level, excel_expertise } = req.body;
 
         if (!name || !email || !password || !grade_level || !excel_expertise) {
             return res.status(400).json({ message: 'All fields are required' });
@@ -24,20 +18,20 @@ exports.register = async (req, res) => {
             VALUES (?, ?, ?, ?, ?, NOW())
         `;
 
-        db.query(
-            sql,
-            [name, email, hashedPassword, grade_level, excel_expertise],
-            (err) => {
-                if (err) {
-                    console.error(err);
-                    return res
-                        .status(400)
-                        .json({ message: 'User already exists or invalid data' });
+        db.query(sql, [name, email, hashedPassword, grade_level, excel_expertise], (err) => {
+            if (err) {
+                console.error(err);
+
+                // Check for duplicate email (MySQL error code 1062)
+                if (err.errno === 1062) {
+                    return res.status(409).json({ message: 'Email already registered' });
                 }
 
-                res.status(201).json({ message: 'Registration successful' });
+                return res.status(400).json({ message: 'Invalid data' });
             }
-        );
+
+            res.status(201).json({ message: 'Registration successful' });
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
