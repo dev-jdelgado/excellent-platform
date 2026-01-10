@@ -9,12 +9,15 @@ export default function Login() {
 
     const submit = async (e) => {
         e.preventDefault();
-        setLoading(true); // <-- start loading
+        setLoading(true); // start loading
         try {
             const res = await login(form);
             const { token, student } = res.data;
             localStorage.setItem('token', token);
-
+    
+            // Stop loading before navigating
+            setLoading(false);
+    
             if (student.is_completed_preassessment) {
                 navigate('/dashboard');
             } else {
@@ -22,9 +25,9 @@ export default function Login() {
             }
         } catch (err) {
             alert('Login failed. Please check your credentials.');
-            setLoading(false); // <-- stop loading on error
+            setLoading(false); // stop loading on error
         }
-    };
+    };    
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-background">

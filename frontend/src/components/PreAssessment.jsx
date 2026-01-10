@@ -29,27 +29,28 @@ export default function PreAssessment() {
     // Fetch student + select questions
     useEffect(() => {
         const fetchStudent = async () => {
-        try {
-            const res = await api.get("/students/me");
-            const student = res.data;
-
-            if (student.is_completed_preassessment) {
-            navigate("/dashboard"); // Already completed → go to dashboard
-            return;
+            try {
+                const res = await api.get("/students/me");
+                const student = res.data;
+    
+                if (student.is_completed_preassessment) {
+                    navigate("/dashboard");
+                    return;
+                }
+    
+                const selected = [
+                    ...pickRandom(QUESTIONS["Cells & Worksheets"], 3),
+                    ...pickRandom(QUESTIONS["Charts & Graphs"], 3),
+                    ...pickRandom(QUESTIONS["Formatting Tools"], 2),
+                    ...pickRandom(QUESTIONS["Sorting & Filtering"], 2),
+                ];
+    
+                setQuestions(selected);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false); // always stop loading
             }
-
-            const selected = [
-            ...pickRandom(QUESTIONS["Cells & Worksheets"], 3),
-            ...pickRandom(QUESTIONS["Charts & Graphs"], 3),
-            ...pickRandom(QUESTIONS["Formatting Tools"], 2),
-            ...pickRandom(QUESTIONS["Sorting & Filtering"], 2),
-            ];
-
-            setQuestions(selected);
-            setLoading(false);
-        } catch (err) {
-            console.error(err);
-        }
         };
 
         fetchStudent();
@@ -82,12 +83,9 @@ export default function PreAssessment() {
             navigate("/dashboard");
         } catch (err) {
             console.error(err);
-            setSubmitting(false);
+            setSubmitting(false); // stop submitting on error
         }
     };
-
-    if (loading) return <p>Loading...</p>;
-    if (!questions.length) return <p>No questions available</p>;
 
     // Results summary view
     if (showResults) {
