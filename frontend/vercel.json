@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "outputDirectory": "build" }
+    }
+  ],
+  "routes": [
+    { "src": "/login", "dest": "/index.html" },
+    { "src": "/register", "dest": "/index.html" },
+    { "src": "/dashboard", "dest": "/index.html" },
+    { "src": "/pre-assessment", "dest": "/index.html" },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}
