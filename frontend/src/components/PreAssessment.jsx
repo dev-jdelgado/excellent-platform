@@ -24,9 +24,7 @@ export default function PreAssessment() {
     const [loading, setLoading] = useState(true);
     const [answers, setAnswers] = useState([]); // Store user answers
     const [showResults, setShowResults] = useState(false); // Show summary
-    const [submitting, setSubmitting] = useState(false);
 
-    // Fetch student + select questions
     useEffect(() => {
         const fetchStudent = async () => {
             try {
@@ -34,9 +32,12 @@ export default function PreAssessment() {
                 const student = res.data;
     
                 if (student.is_completed_preassessment) {
-                    navigate("/dashboard");
-                    return;
+                    navigate("/dashboard"); // Already completed → go to dashboard
+                    return; // Exit early
                 }
+    
+                // Only set loading true for students who need questions
+                setLoading(true);
     
                 const selected = [
                     ...pickRandom(QUESTIONS["Cells & Worksheets"], 3),
@@ -46,15 +47,14 @@ export default function PreAssessment() {
                 ];
     
                 setQuestions(selected);
+                setLoading(false);
             } catch (err) {
                 console.error(err);
-            } finally {
-                setLoading(false); // always stop loading
             }
         };
-
+    
         fetchStudent();
-    }, [navigate]);
+    }, [navigate]);    
 
     const handleNext = () => {
         // Record the selected answer
@@ -77,15 +77,19 @@ export default function PreAssessment() {
     };
 
     const handleSubmitResults = async () => {
-        setSubmitting(true);
         try {
-            await api.post("/students/pre-assessment/submit", { score });
-            navigate("/dashboard");
+        // Submit score to backend
+        await api.post("/students/pre-assessment/submit", { score });
+
+        // Navigate to dashboard after submission
+        navigate("/dashboard");
         } catch (err) {
-            console.error(err);
-            setSubmitting(false); // stop submitting on error
+        console.error(err);
         }
     };
+
+    if (loading) return <p>Loading...</p>;
+    if (!questions.length) return <p>No questions available</p>;
 
     // Results summary view
     if (showResults) {
@@ -130,36 +134,9 @@ export default function PreAssessment() {
                 <div className="max-w-xl mx-auto">
                     <button
                         onClick={handleSubmitResults}
-                        disabled={submitting}
-                        className="mt-4 py-2 px-4 w-full bg-primary text-white font-semibold rounded hover:bg-secondary transition disabled:opacity-50 flex justify-center items-center gap-2"
+                        className="mt-4 py-2 px-4 w-full bg-primary text-white font-semibold rounded hover:bg-secondary transition disabled:opacity-50"
                     >
-                        {submitting ? (
-                            <>
-                                <svg
-                                    className="animate-spin h-5 w-5 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                    ></circle>
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8v8H4z"
-                                    ></path>
-                                </svg>
-                                Submitting...
-                            </>
-                        ) : (
-                            "Continue to Dashboard"
-                        )}
+                        Continue to Dashboard
                     </button>
                 </div>
             </div>

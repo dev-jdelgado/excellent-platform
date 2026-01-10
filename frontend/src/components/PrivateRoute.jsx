@@ -3,33 +3,40 @@ import { Navigate } from "react-router-dom";
 import api from "../api/axios";
 
 export default function PrivateRoute({ children, requirePreAssessment = false }) {
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [checked, setChecked] = useState(false); // whether we finished fetching
+  const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await api.get("/students/me");
-        setUser(res.data);
+        const student = res.data;
+        setUser(student);
+
+        if (!requirePreAssessment || student.is_completed_preassessment) {
+          setAllowed(true);
+        }
+
+        setLoading(false);
       } catch (err) {
         console.error(err);
-        setUser(null);
-      } finally {
-        setChecked(true);
+        setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [requirePreAssessment]);
 
-  // Render children immediately
-  // Only redirect after we know the user status
-  if (checked) {
-    if (!user) return <Navigate to="/login" />;
-    if (requirePreAssessment && !user.is_completed_preassessment) {
-      return <Navigate to="/pre-assessment" />;
-    }
+  if (loading) return <p>Loading...</p>;
+
+  // Not logged in
+  if (!user) return <Navigate to="/login" />;
+
+  // Pre-assessment required but not completed
+  if (requirePreAssessment && !user.is_completed_preassessment) {
+    return <Navigate to="/pre-assessment" />;
   }
 
-  return children;
+  return allowed ? children : null;
 }
