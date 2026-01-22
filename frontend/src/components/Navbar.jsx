@@ -12,8 +12,8 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="splash-bg text-white">
-            <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <nav className="splash-nav text-white">
+            <div className="max-w-7xl mx-auto sm:px-6 px-3 py-4 flex items-center justify-between">
                 <h1 className="text-xl font-bold tracking-wide">
                     EXCELLENT
                 </h1>

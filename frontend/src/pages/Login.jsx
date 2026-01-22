@@ -23,7 +23,7 @@ export default function Login() {
             setTimeout(() => {
                 setLoading(false);
                 if (student.is_completed_preassessment) {
-                    navigate('/dashboard');
+                    navigate('/excel-tools');
                 } else {
                     navigate('/pre-assessment');
                 }

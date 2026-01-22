@@ -4,7 +4,7 @@ const { verifyToken } = require('../middleware/auth');
 const requirePreAssessment = require('../middleware/preassessment.middleware');
 
 router.get(
-    '/dashboard',
+    '/excel-tools',
     verifyToken,
     requirePreAssessment, // 🚨 BLOCKS BYPASS
     (req, res) => {

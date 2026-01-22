@@ -34,7 +34,7 @@ export default function PreAssessment() {
 
                 if (student.is_completed_preassessment) {
                     toast.success("You have already completed the Pre-Assessment!");
-                    navigate("/dashboard");
+                    navigate("/excel-tools");
                     return;
                 }
 
@@ -86,7 +86,7 @@ export default function PreAssessment() {
             toast.success("Redirecting to Dashboard...");
             setTimeout(() => {
                 setRedirectLoading(false);
-                navigate("/dashboard");
+                navigate("/excel-tools");
             }, 2000); // small delay to show toast
         } catch (err) {
             console.error(err);

@@ -22,3 +22,15 @@ body {
     rgba(33, 115, 70, 1) 100%
   );
 }
+
+.splash-nav {
+  background: #217346;
+  background: linear-gradient(
+    90deg,
+    rgba(33, 115, 70, 1) 0%,
+    rgba(46, 142, 90, 1) 30%,
+    rgba(73, 196, 130, 1) 50%,
+    rgba(49, 148, 94, 1) 70%,
+    rgba(33, 115, 70, 1) 100%
+  );
+}
