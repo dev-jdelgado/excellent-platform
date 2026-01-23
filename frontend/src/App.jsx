@@ -11,6 +11,10 @@ import FileOperations from "./pages/modules/FileOperations";
 import FileOperationsNewWorkbook from "./pages/modules/FileOperationsNewWorkbook";
 import FileOperationsSaveExport from "./pages/modules/FileOperationsSaveExport";
 
+import EditAndModify from "./pages/modules/EditAndModify";
+import EditAndModifyCopyPaste from "./pages/modules/EditAndModifyCopyPaste";
+import EditAndModifyFindReplace from "./pages/modules/EditAndModifyFindReplace";
+
 
 // ✅ Add these imports
 import Formulas from "./pages/Formulas";
@@ -30,25 +34,10 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Excel Tools / Dashboard */}
-        <Route
-          path="/excel-tools"
-          element={
-            <PrivateRoute requirePreAssessment>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/excel-tools" element={ <PrivateRoute requirePreAssessment> <Dashboard /> </PrivateRoute>}/>
 
-        {/*  File Operations module + lessons */}
-        <Route
-          path="/modules/file-operations"
-          element={
-            <PrivateRoute requirePreAssessment>
-              <FileOperations />
-            </PrivateRoute>
-          }
-        />
-
+        {/*  MODULES */}
+        <Route path="/modules/file-operations" element={ <PrivateRoute requirePreAssessment> <FileOperations /> </PrivateRoute> } />
         <Route
           path="/modules/file-operations/new-workbook"
           element={
@@ -57,7 +46,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/modules/file-operations/save-export"
           element={
@@ -66,6 +54,32 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        <Route
+          path="/modules/edit-modify"
+          element={
+            <PrivateRoute requirePreAssessment>
+              <EditAndModify />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/modules/edit-modify/copy-paste"
+          element={
+            <PrivateRoute requirePreAssessment>
+              <EditAndModifyCopyPaste />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/modules/edit-modify/find-replace"
+          element={
+            <PrivateRoute requirePreAssessment>
+              <EditAndModifyFindReplace />
+            </PrivateRoute>
+          }
+        />
+        {/*  END OF MODULES */}
 
         {/* ✅ Formulas */}
         <Route
