@@ -8,7 +8,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Splash from "./components/Splash";
 import PreAssessment from "./components/PreAssessment";
 
-// Modules
+// EXCEL TOOLS LESSONS
 import FileOperations from "./pages/modules/FileOperations";
 import FileOperationsNewWorkbook from "./pages/modules/FileOperationsNewWorkbook";
 import FileOperationsSaveExport from "./pages/modules/FileOperationsSaveExport";
@@ -38,8 +38,20 @@ import Formatting from "./pages/modules/Formatting";
 import FormattingCellFormatting from "./pages/modules/FormattingCellFormatting";
 import FormattingConditionalFormatting from "./pages/modules/FormattingConditionalFormatting";
 
+
+// FORMULA LESSONS
 import Formulas from "./pages/Formulas";
+import FormulaSUM from "./pages/formulas/FormulaSUM";
+import FormulaAVERAGE from "./pages/formulas/FormulaAVERAGE";
+import FormulaIF from "./pages/formulas/FormulaIF";
+import FormulaVLOOKUP from "./pages/formulas/FormulaVLOOKUP";
+import FormulaCONCAT from "./pages/formulas/FormulaCONCAT";
+import FormulaCOUNTIF from "./pages/formulas/FormulaCOUNTIF";
+
+
+// ACTIVITIES
 import Activities from "./pages/Activities";
+
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -52,6 +64,8 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
+
+      {/* EXCEL TOOLS LESSONS */}
       <Route path="/excel-tools" element={<PrivateRoute requirePreAssessment><Dashboard /></PrivateRoute>} />
 
       <Route path="/excel-tools/file-operations" element={<PrivateRoute requirePreAssessment><FileOperations /></PrivateRoute>} />
@@ -83,8 +97,20 @@ function App() {
       <Route path="/excel-tools/formatting/cell-formatting" element={<PrivateRoute requirePreAssessment><FormattingCellFormatting /></PrivateRoute>} />
       <Route path="/excel-tools/formatting/conditional-formatting" element={<PrivateRoute requirePreAssessment><FormattingConditionalFormatting /></PrivateRoute>} /> 
 
+
+      {/* FORMULA LESSONS */}
       <Route path="/formulas" element={<PrivateRoute requirePreAssessment><Formulas /></PrivateRoute>} />
+      <Route path="/formulas/sum" element={<PrivateRoute requirePreAssessment><FormulaSUM /></PrivateRoute>} />
+      <Route path="/formulas/average" element={<PrivateRoute requirePreAssessment><FormulaAVERAGE /></PrivateRoute>} />
+      <Route path="/formulas/if" element={<PrivateRoute requirePreAssessment><FormulaIF /></PrivateRoute>} />
+      <Route path="/formulas/vlookup" element={<PrivateRoute requirePreAssessment><FormulaVLOOKUP /></PrivateRoute>} />
+      <Route path="/formulas/concat" element={<PrivateRoute requirePreAssessment><FormulaCONCAT /></PrivateRoute>} />
+      <Route path="/formulas/countif" element={<PrivateRoute requirePreAssessment><FormulaCOUNTIF /></PrivateRoute>} />
+
+
+      {/* ACTIVITIES */}
       <Route path="/activities" element={<PrivateRoute requirePreAssessment><Activities /></PrivateRoute>} />
+
 
       <Route path="/pre-assessment" element={<PrivateRoute><PreAssessment /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/excel-tools" />} />
