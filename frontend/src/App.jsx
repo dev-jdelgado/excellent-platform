@@ -51,7 +51,7 @@ import FormulaCOUNTIF from "./pages/formulas/FormulaCOUNTIF";
 
 // ACTIVITIES
 import Activities from "./pages/Activities";
-
+import Activity1 from "./pages/activities/Activity1";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -110,6 +110,7 @@ function App() {
 
       {/* ACTIVITIES */}
       <Route path="/activities" element={<PrivateRoute requirePreAssessment><Activities /></PrivateRoute>} />
+      <Route path="/activities/1" element={<PrivateRoute requirePreAssessment> <Activity1 /> </PrivateRoute>} />
 
 
       <Route path="/pre-assessment" element={<PrivateRoute><PreAssessment /></PrivateRoute>} />

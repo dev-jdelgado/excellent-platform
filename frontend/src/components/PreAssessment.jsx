@@ -130,7 +130,7 @@ export default function PreAssessment() {
 
             <div>
                 {!showResults ? (
-                    <div>
+                    <div className="mt-10">
                         {/* Quiz Header */}
                         <div className="mb-10">
                             <h1 className="text-3xl font-bold text-center flex items-center justify-center gap-2">
