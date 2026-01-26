@@ -36,7 +36,7 @@ export default function Dashboard() {
             description: "Create, open, save, and manage Excel files",
             topics: 2,
             icon: DocumentTextIcon,
-            href: "/modules/file-operations",
+            href: "/excel-tools/file-operations",
         },
         {
             title: "Edit & Modify",
@@ -44,7 +44,7 @@ export default function Dashboard() {
             description: "Cut, copy, paste, find, and replace data",
             topics: 2,
             icon: PencilSquareIcon,
-            href: "/modules/edit-modify",
+            href: "/excel-tools/edit-modify",
         },
         {
             title: "View Options",
@@ -52,7 +52,7 @@ export default function Dashboard() {
             description: "Control how your spreadsheet is displayed",
             topics: 2,
             icon: EyeIcon,
-            href: "/modules/view-options",
+            href: "/excel-tools/view-options",
         },
         {
             title: "Data Management",
@@ -60,7 +60,7 @@ export default function Dashboard() {
             description: "Sort, filter, and manage your data",
             topics: 3,
             icon: CircleStackIcon,
-            href: "/modules/data-management",
+            href: "/excel-tools/data-management",
         },
         {
             title: "Formula Tools",
@@ -68,7 +68,7 @@ export default function Dashboard() {
             description: "Use formulas to calculate and analyze data",
             topics: 3,
             icon: CalculatorIcon,
-            href: "/modules/formula-tools",
+            href: "/excel-tools/formula-tools",
         },
         {
             title: "Insert Elements",
@@ -76,7 +76,7 @@ export default function Dashboard() {
             description: "Add tables, charts, and visual elements",
             topics: 3,
             icon: PhotoIcon,
-            href: "/modules/insert-elements",
+            href: "/excel-tools/insert-elements",
         },
         {
             title: "Formatting",
@@ -84,7 +84,7 @@ export default function Dashboard() {
             description: "Add tables, charts, and visual elements",
             topics: 3,
             icon: WrenchIcon,
-            href: "/modules/formatting",
+            href: "/excel-tools/formatting",
         },
     ];
 

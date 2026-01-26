@@ -15,12 +15,12 @@ export default function EditAndModify() {
         {
             title: "Copy & Paste",
             description: "Copy cells and paste with different options",
-            to: "/modules/edit-modify/copy-paste",
+            to: "/excel-tools/edit-modify/copy-paste",
         },
         {
             title: "Find & Replace",
             description: "Quickly find and replace text or values",
-            to: "/modules/edit-modify/find-replace",
+            to: "/excel-tools/edit-modify/find-replace",
         },
     ];
 

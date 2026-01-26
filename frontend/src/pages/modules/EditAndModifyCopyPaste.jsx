@@ -28,7 +28,7 @@ export default function EditAndModifyCopyPaste() {
                     <main>
                         {/* Back */}
                         <Link
-                            to="/modules/edit-modify"
+                            to="/excel-tools/edit-modify"
                             className="inline-flex items-center gap-2 text-sm text-primary hover:text-gray-900 font-semibold"
                         >
                             <ArrowLeftIcon className="h-5 w-5" />
