@@ -52,6 +52,15 @@ import FormulaCOUNTIF from "./pages/formulas/FormulaCOUNTIF";
 // ACTIVITIES
 import Activities from "./pages/Activities";
 import Activity1 from "./pages/activities/Activity1";
+import Activity2 from "./pages/activities/Activity2";
+import Activity3 from "./pages/activities/Activity3";
+import Activity4 from "./pages/activities/Activity4";
+import Activity5 from "./pages/activities/Activity5";
+import Activity6 from "./pages/activities/Activity6";
+import Activity7 from "./pages/activities/Activity7";
+import Activity8 from "./pages/activities/Activity8";
+import Activity9 from "./pages/activities/Activity9";
+import Activity10 from "./pages/activities/Activity10";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -111,6 +120,16 @@ function App() {
       {/* ACTIVITIES */}
       <Route path="/activities" element={<PrivateRoute requirePreAssessment><Activities /></PrivateRoute>} />
       <Route path="/activities/1" element={<PrivateRoute requirePreAssessment> <Activity1 /> </PrivateRoute>} />
+      <Route path="/activities/2" element={<PrivateRoute requirePreAssessment><Activity2 /></PrivateRoute>} />
+      <Route path="/activities/3" element={<PrivateRoute requirePreAssessment><Activity3 /></PrivateRoute>} />
+      <Route path="/activities/4" element={<PrivateRoute requirePreAssessment><Activity4 /></PrivateRoute>} />
+      <Route path="/activities/5" element={<PrivateRoute requirePreAssessment><Activity5 /></PrivateRoute>} />
+      <Route path="/activities/6" element={<PrivateRoute requirePreAssessment><Activity6 /></PrivateRoute>} />
+      <Route path="/activities/7" element={<PrivateRoute requirePreAssessment><Activity7 /></PrivateRoute>} />
+      <Route path="/activities/8" element={<PrivateRoute requirePreAssessment><Activity8 /></PrivateRoute>} />
+      <Route path="/activities/9" element={<PrivateRoute requirePreAssessment><Activity9 /></PrivateRoute>} />
+      <Route path="/activities/10" element={<PrivateRoute requirePreAssessment><Activity10 /></PrivateRoute>} />
+
 
 
       <Route path="/pre-assessment" element={<PrivateRoute><PreAssessment /></PrivateRoute>} />
