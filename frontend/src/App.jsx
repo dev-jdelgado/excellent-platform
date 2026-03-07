@@ -62,6 +62,8 @@ import Activity8 from "./pages/activities/Activity8";
 import Activity9 from "./pages/activities/Activity9";
 import Activity10 from "./pages/activities/Activity10";
 
+import VideoTutorials from "./pages/VideoTutorials";
+
 function App() {
   const [showSplash, setShowSplash] = useState(true);
 
@@ -130,7 +132,7 @@ function App() {
       <Route path="/activities/9" element={<PrivateRoute requirePreAssessment><Activity9 /></PrivateRoute>} />
       <Route path="/activities/10" element={<PrivateRoute requirePreAssessment><Activity10 /></PrivateRoute>} />
 
-
+      <Route path="/videos" element={<PrivateRoute><VideoTutorials /></PrivateRoute>} />
 
       <Route path="/pre-assessment" element={<PrivateRoute><PreAssessment /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/excel-tools" />} />

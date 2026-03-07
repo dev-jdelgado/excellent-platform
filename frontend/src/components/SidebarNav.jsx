@@ -4,6 +4,7 @@ import {
   BookOpenIcon,
   CircleStackIcon,
   DocumentTextIcon,
+  PlayCircleIcon,
 } from "@heroicons/react/24/outline";
 
 export default function SidebarNav() {
@@ -36,6 +37,11 @@ export default function SidebarNav() {
                         <NavLink to="/activities" className={navItemClass}>
                             <DocumentTextIcon className="h-5 w-5" />
                             Activities
+                        </NavLink>
+
+                        <NavLink to="/videos" className={navItemClass}>
+                            <PlayCircleIcon className="h-5 w-5" />
+                            Video Tutorials
                         </NavLink>
                     </div>
                 </div>

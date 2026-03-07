@@ -4,6 +4,7 @@ import {
     CircleStackIcon,
     DocumentTextIcon,
     CalculatorIcon,
+    PlayCircleIcon
 } from "@heroicons/react/24/outline";
 
 export default function MobileTabBar() {
@@ -44,6 +45,18 @@ export default function MobileTabBar() {
                     >
                     <DocumentTextIcon className="h-6 w-6" />
                     Activities
+                </NavLink>
+
+                <NavLink
+                    to="/videos"
+                    className={({ isActive }) =>
+                        `flex flex-col items-center gap-1 ${
+                        isActive ? "text-emerald-700 font-medium" : "text-gray-500"
+                        }`
+                    }
+                    >
+                    <PlayCircleIcon className="h-6 w-6" />
+                    Videos
                 </NavLink>
             </div>
         </div>
