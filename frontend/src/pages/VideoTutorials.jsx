@@ -33,6 +33,16 @@ export default function VideoTutorials() {
             description: "Introduction to Excel workspace",
             src: "/videos/introduction.mp4",
         },
+        {
+            title: "Cell Formatting",
+            description: "Introduction to Cell Formatting",
+            src: "/videos/cell-formatting.mp4",
+        },
+        {
+            title: "Formatting Worksheet",
+            description: "Formatting cells and tables on worksheets",
+            src: "/videos/formatting-worksheet.mp4",
+        },
     ];
 
     return (
