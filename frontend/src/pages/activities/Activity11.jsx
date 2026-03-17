@@ -26,7 +26,9 @@ export default function Activity11() {
 
     const acceptedFormulas = [
         "=sumproduct(b2:b5,c2:c5)",
-        "=sumproduct(b6:b9,c6:c9)",
+        "=sumproduct(e2:e5,f2:f5)",
+        "=(b6*60%)+(e6*40%)",
+        "=b6*0.6+e6*0.4",
     ];
 
     return (
@@ -107,18 +109,81 @@ export default function Activity11() {
             </>
         }
 
-        letters={["A", "B", "C"]}
-        sheetHeaders={["Component", "Score", "Weight"]}
-
+        letters={["A", "B", "C", "D", "E", "F"]}
+        sheetHeaders={[
+            "Lecture Component",
+            "Score",
+            "Weight",
+            "Lab Component",
+            "Score",
+            "Weight"
+        ]}
         rows={[
-            { row: "2", cells: ["Lecture - Performance Output", "90", "40%"] },
-            { row: "3", cells: ["Lecture - Major Exam", "85", "30%"] },
-            { row: "4", cells: ["Lecture - Quiz", "80", "15%"] },
-            { row: "5", cells: ["Lecture - Recitation", "95", "15%"] },
-            { row: "6", cells: ["Lab - Performance Output", "92", "40%"] },
-            { row: "7", cells: ["Lab - Major Assessment", "88", "30%"] },
-            { row: "8", cells: ["Lab - Peer Assessment", "90", "15%"] },
-            { row: "9", cells: ["Lab - Practice", "94", "15%"] },
+        {
+            row: "2",
+            cells: [
+            "Performance Output",
+            "90",
+            "40%",
+            "Performance Output",
+            "92",
+            "40%",
+            ],
+        },
+        {
+            row: "3",
+            cells: [
+            "Major Exam",
+            "85",
+            "30%",
+            "Major Assessment",
+            "88",
+            "30%",
+            ],
+        },
+        {
+            row: "4",
+            cells: [
+            "Quiz",
+            "80",
+            "15%",
+            "Peer Assessment",
+            "90",
+            "15%",
+            ],
+        },
+        {
+            row: "5",
+            cells: [
+            "Recitation",
+            "95",
+            "15%",
+            "Practice",
+            "94",
+            "15%",
+            ],
+        },
+
+        // TOTAL ROW
+        {
+            row: "6",
+            cells: [
+            "Lecture Total",
+            "",
+            "100%",
+            "Lab Total",
+            "",
+            "100%",
+            ],
+        },
+
+        // FINAL GRADE ROW
+        {
+            row: "7",
+            cells: [
+            "Final Grade",
+            ],
+        },
         ]}
 
         tableMaxWidth="max-w-2xl"
@@ -129,19 +194,19 @@ export default function Activity11() {
             <>
                 Step 1: Compute Lecture Grade
                 <br />
-                <span className="font-semibold">Hint:</span> Try using:
-                <br />
                 <code>=SUMPRODUCT(B2:B5,C2:C5)</code>
+
                 <br /><br />
 
-                Step 2: Compute Lab Grade
+                Step 2: Compute Laboratory Grade
                 <br />
-                <code>=SUMPRODUCT(B6:B9,C6:C9)</code>
+                <code>=SUMPRODUCT(E2:E5,F2:F5)</code>
+
                 <br /><br />
 
-                Step 3: Final Grade
+                Step 3: Compute Final Grade
                 <br />
-                Final=(Total Lecture Score × 60%) + (Total Lab Score × 40%)
+                <code>=(B6*60%)+(E6*40%)</code>
             </>
         }
 
