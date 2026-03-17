@@ -88,6 +88,14 @@ export default function Activities() {
                 "If today is January 15, 2025, how many days until March 1, 2024?",
             href: "/activities/10",
         },
+        {
+            no: 11,
+            difficulty: "Hard",
+            title: "Grade Computation",
+            description:
+                "Compute the final grade using Lecture (60%) and Laboratory (40%) weighted components.",
+            href: "/activities/11",
+        },
     ];
 
     const difficultyBadge = (difficulty) => {

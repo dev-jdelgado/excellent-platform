@@ -61,6 +61,7 @@ import Activity7 from "./pages/activities/Activity7";
 import Activity8 from "./pages/activities/Activity8";
 import Activity9 from "./pages/activities/Activity9";
 import Activity10 from "./pages/activities/Activity10";
+import Activity11 from "./pages/activities/Activity11";
 
 import VideoTutorials from "./pages/VideoTutorials";
 
@@ -131,6 +132,8 @@ function App() {
       <Route path="/activities/8" element={<PrivateRoute requirePreAssessment><Activity8 /></PrivateRoute>} />
       <Route path="/activities/9" element={<PrivateRoute requirePreAssessment><Activity9 /></PrivateRoute>} />
       <Route path="/activities/10" element={<PrivateRoute requirePreAssessment><Activity10 /></PrivateRoute>} />
+      <Route path="/activities/11" element={<PrivateRoute requirePreAssessment><Activity11 /></PrivateRoute>} />
+
 
       <Route path="/videos" element={<PrivateRoute><VideoTutorials /></PrivateRoute>} />
 
