@@ -39,10 +39,10 @@ export default function SidebarNav() {
                             Activities
                         </NavLink>
 
-                        <NavLink to="/videos" className={navItemClass}>
+                        {/* <NavLink to="/videos" className={navItemClass}>
                             <PlayCircleIcon className="h-5 w-5" />
                             Video Tutorials
-                        </NavLink>
+                        </NavLink> */}
                     </div>
                 </div>
             </div>

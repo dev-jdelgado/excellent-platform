@@ -7,7 +7,13 @@ const studentController = require("../controllers/student.controller");
 // Get current student
 router.get("/me", verifyToken, (req, res) => {
     const query = `
-        SELECT id, name, email, is_completed_preassessment 
+        SELECT 
+            id, 
+            name, 
+            email, 
+            excel_expertise,
+            preassessment_score,
+            is_completed_preassessment 
         FROM students 
         WHERE id = ?
     `;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
+import api from "../api/axios";
 import {
     DocumentTextIcon,
     PencilSquareIcon,
@@ -19,15 +20,32 @@ export default function Dashboard() {
     const [student, setStudent] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setStudent({
-            id: payload.id,
-            name: payload.name,
-        });
-        }
+        const fetchStudent = async () => {
+            try {
+                const res = await api.get("/students/me");
+                setStudent(res.data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+    
+        fetchStudent();
     }, []);
+
+    const getUserLevel = (student) => {
+        if (!student) return "Loading...";
+    
+        const { excel_expertise, preassessment_score, is_completed_preassessment } = student;
+    
+        if (!is_completed_preassessment) {
+            return excel_expertise;
+        }
+    
+        // Combine both
+        if (preassessment_score >= 8 && excel_expertise === "Advanced") return "Advanced";
+        if (preassessment_score >= 5) return "Intermediate";
+        return "Beginner";
+    };
 
     const tools = [
         {
@@ -127,6 +145,24 @@ export default function Dashboard() {
 
             {/* Body */}
             <div className="mx-auto max-w-7xl px-3 sm:px-6 py-6 pb-24">
+                {student && (
+                    <div className="mb-6 p-4 bg-white rounded-2xl border shadow-sm flex justify-between">
+                        <h2 className="text-lg font-semibold text-gray-900">
+                            Welcome, {student.name} 👋
+                        </h2>
+
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm text-gray-600">
+                                Your proficiency level is 
+                            </p>
+
+                            <span className="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-emerald-100 text-emerald-700">
+                                {getUserLevel(student)}
+                            </span>
+                        </div>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* ✅ Desktop Sidebar component */}
                     <SidebarNav />

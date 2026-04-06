@@ -47,7 +47,7 @@ export default function MobileTabBar() {
                     Activities
                 </NavLink>
 
-                <NavLink
+                {/* <NavLink
                     to="/videos"
                     className={({ isActive }) =>
                         `flex flex-col items-center gap-1 ${
@@ -57,7 +57,7 @@ export default function MobileTabBar() {
                     >
                     <PlayCircleIcon className="h-6 w-6" />
                     Videos
-                </NavLink>
+                </NavLink> */}
             </div>
         </div>
     );
