@@ -2,11 +2,13 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
 import { ArrowLeftIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import ExcelEngine from "../../components/ExcelEngine";
+import { excelSteps } from "../../components/stepsConfig";
 
 export default function FileOperationsNewWorkbook() {
     const steps = [
-        "Click 'New'",
-        "Select 'Blank Workbook' or choose a template",
+        "Click 'New Sheet (+)' below",
+        "A Blank Sheet will open",
         "Start working",
     ];
 
@@ -82,6 +84,10 @@ export default function FileOperationsNewWorkbook() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <ExcelEngine steps={excelSteps.newWorkbook} />
                         </div>
 
                         {/* Tips */}

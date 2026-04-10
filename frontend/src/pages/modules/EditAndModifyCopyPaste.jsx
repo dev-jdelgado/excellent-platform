@@ -2,6 +2,8 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
 import { ArrowLeftIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import ExcelEngine from "../../components/ExcelEngine";
+import { excelSteps } from "../../components/stepsConfig";
 
 export default function EditAndModifyCopyPaste() {
     const steps = [
@@ -79,6 +81,10 @@ export default function EditAndModifyCopyPaste() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <ExcelEngine steps={excelSteps.copyPaste} />
                         </div>
 
                         {/* Tips */}

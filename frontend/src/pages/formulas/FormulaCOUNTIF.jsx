@@ -2,6 +2,8 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
 import { ArrowLeftIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import ExcelEngine from "../../components/ExcelEngine";
+import { excelSteps } from "../../components/stepsConfig";
 
 function Pill({ children, tone = "gray" }) {
     const tones = {
@@ -106,72 +108,6 @@ export default function FormulaCOUNTIF() {
                             </div>
                         </div>
 
-                        {/* Example */}
-                        <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
-                            <p className="font-semibold text-gray-900">Example</p>
-                            <p className="text-sm text-gray-600 mt-1">Sample Data</p>
-
-                            <div className="mt-3 overflow-hidden bg-white">
-                                <div className="overflow-auto">
-                                    <table className="border border-gray-300 max-w-xl w-full text-sm border-separate border-spacing-0">
-                                        {/* Excel column headers */}
-                                        <thead className="sticky top-0 z-10">
-                                            <tr>
-                                                {/* top-left corner */}
-                                                <th className="sticky left-0 z-20 w-1/4 border-b border-r border-gray-300 bg-primary" />
-                                                <th className="border-b border-gray-300 bg-primary px-3 py-2 text-left font-semibold text-white">
-                                                    A
-                                                </th>
-                                                <th className="border-b border-gray-300 bg-primary px-3 py-2 text-left font-semibold text-white">
-                                                    B
-                                                </th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            {[
-                                                ["1", "Student", "Score"],
-                                                ["2", "A", "85"],
-                                                ["3", "B", "75"],
-                                                ["4", "C", "90"],
-                                            ].map(([row, colA, colB]) => (
-                                            <tr key={row}>
-                                                {/* Excel row header */}
-                                                <th className="sticky left-0 z-10 w-1/4 border-b border-r border-gray-300 bg-primary px-2 py-2 text-left font-semibold text-white">
-                                                    {row}
-                                                </th>
-
-                                                {/* Column A */}
-                                                <td className="border-b border-r border-gray-300 px-3 py-2 text-left">
-                                                    {colA}
-                                                </td>
-
-                                                {/* Column B — LEFT aligned as requested */}
-                                                <td className="border-b border-r border-gray-300 px-3 py-2 text-left">
-                                                    {colB}
-                                                </td>
-                                            </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div className="mt-4">
-                                <p className="text-sm font-semibold text-gray-900">Formula</p>
-                                <MonoBox>=COUNTIF(B2:B10, "&gt;80")</MonoBox>
-                            </div>
-
-                            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-                                <p className="text-sm text-gray-700">Result</p>
-                                <p className="mt-1 font-semibold text-emerald-900">2</p>
-                            </div>
-
-                            <p className="mt-3 text-sm text-gray-600">
-                                Counts how many scores are greater than 80 (85 and 90).
-                            </p>
-                        </div>
-
                         {/* Interactive Demo */}
                         <div className="mt-4 rounded-2xl border border-emerald-700 bg-emerald-50 shadow-sm p-5">
                             <div className="flex items-start gap-2">
@@ -195,6 +131,22 @@ export default function FormulaCOUNTIF() {
                                     </div>
                                 ))}
                             </div>
+
+                            <div className="mt-4 border rounded-xl overflow-hidden">
+                                <ExcelEngine
+                                    steps={excelSteps.COUNTIF}
+                                    initialData={[
+                                        ["Student", "Score", "", "", ""],
+                                        ["A", 85, "", "", ""],
+                                        ["B", 75, "", "", ""],
+                                        ["C", 90, "", "", ""],
+                                        ["Count >80", "", "", "", ""],
+                                    ]}
+                                />
+                            </div>
+                            <p className="text-xs text-gray-600 mt-2">
+                            💡 Tip: Click <span className="font-semibold">B5</span> then type the formula
+                            </p>
                         </div>
 
                         {/* Tips */}

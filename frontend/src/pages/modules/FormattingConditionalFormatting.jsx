@@ -2,6 +2,8 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
 import { ArrowLeftIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import ExcelEngine from "../../components/ExcelEngine";
+import { excelSteps } from "../../components/stepsConfig";
 
 export default function FormattingConditionalFormatting() {
     const steps = [
@@ -76,6 +78,10 @@ export default function FormattingConditionalFormatting() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <ExcelEngine steps={excelSteps.conditionalFormatting} />
                         </div>
 
                         <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
