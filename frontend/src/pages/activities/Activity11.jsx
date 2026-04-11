@@ -42,11 +42,13 @@ const initialData = [
 
 const steps = [
     { instruction: "Select cell B6", action: "select-cell", target: "B6" },
-    { instruction: "Compute Lecture Grade", action: "formula" },
+    { instruction: "Type =SUMPRODUCT(B2:B5,C2:C5)", action: "formula" },
+
     { instruction: "Select cell E6", action: "select-cell", target: "E6" },
-    { instruction: "Compute Lab Grade", action: "formula" },
+    { instruction: "Type =SUMPRODUCT(E2:E5,F2:F5)", action: "formula" },
+
     { instruction: "Select cell B7", action: "select-cell", target: "B7" },
-    { instruction: "Compute Total Grade", action: "formula" },
+    { instruction: "Type =(B6*60%)+(E6*40%)", action: "formula" },
 ];
 
 export default function Activity11() {

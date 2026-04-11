@@ -168,7 +168,11 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                     return values.filter(v => !isNaN(parseFloat(v))).length;
                 },
                 COUNTA: (args) => {
-                    const values = getValuesFromArgs(args, visited);
+                    let values = getValuesFromArgs(args, visited);
+                
+                    // 🔥 Flatten arrays (for UNIQUE support)
+                    values = values.flat ? values.flat() : values;
+                
                     return values.filter(v => v !== "").length;
                 },
                 MAX: (args) => {
@@ -198,6 +202,26 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                             sum += parseFloat(getCellValue(sumCell.row, sumCell.col, new Set(visited))) || 0;
                         }
                     });
+                    return sum;
+                },
+                SUMPRODUCT: (args) => {
+                    const parts = args.split(",").map(a => a.trim());
+                    const range1 = parseRange(parts[0]);
+                    const range2 = parseRange(parts[1]);
+                
+                    let sum = 0;
+                    const parseValue = (val) => {
+                        if (typeof val === "string" && val.includes("%")) {
+                            return parseFloat(val) / 100;
+                        }
+                        return parseFloat(val) || 0;
+                    };
+                    for (let i = 0; i < range1.length; i++) {
+                        const val1 = parseValue(getCellValue(range1[i].row, range1[i].col, new Set(visited)));
+                        const val2 = parseValue(getCellValue(range2[i].row, range2[i].col, new Set(visited)));
+                
+                        sum += val1 * val2;
+                    }
                     return sum;
                 },
                 COUNTIF: (args) => {
@@ -237,19 +261,34 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                 },
                 COUNTIFS: (args) => {
                     const parts = args.split(",").map(a => a.trim());
+                
+                    const conditions = [];
+                    for (let i = 0; i < parts.length; i += 2) {
+                        conditions.push({
+                            range: parseRange(parts[i]),
+                            criteria: parts[i + 1].replace(/"/g, "")
+                        });
+                    }
+                
                     let count = 0;
                 
-                    for (let i = 0; i < parts.length; i += 2) {
-                        const range = parseRange(parts[i]);
-                        const criteria = parts[i + 1].replace(/"/g, "");
+                    // Assume all ranges are same length (like Excel requirement)
+                    const length = conditions[0].range.length;
                 
-                        range.forEach((cell, idx) => {
+                    for (let i = 0; i < length; i++) {
+                        let match = true;
+                
+                        for (const cond of conditions) {
+                            const cell = cond.range[i];
                             const val = getCellValue(cell.row, cell.col, new Set(visited));
                 
-                            if (matchesCriteria(val, criteria)) {
-                                count++;
+                            if (!matchesCriteria(val, cond.criteria)) {
+                                match = false;
+                                break;
                             }
-                        });
+                        }
+                
+                        if (match) count++;
                     }
                 
                     return count;
@@ -259,20 +298,25 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                     const lookupVal = evaluateExpression(parts[0], visited);
                     const range = parseRange(parts[1]);
                     const colIndex = parseInt(parts[2]) - 1;
-                    const exactMatch = parts[3]?.toUpperCase() !== "FALSE";
-                    
-                    // Get unique rows in range
+                    const exactMatch = parts[3]?.toUpperCase() === "FALSE";
+                
                     const rows = [...new Set(range.map(c => c.row))].sort((a, b) => a - b);
                     const cols = [...new Set(range.map(c => c.col))].sort((a, b) => a - b);
-                    
+                
                     for (const row of rows) {
                         const cellVal = getCellValue(row, cols[0], new Set(visited));
-                        if (exactMatch ? cellVal == lookupVal : cellVal <= lookupVal) {
-                            if (!exactMatch || cellVal == lookupVal) {
+                
+                        if (exactMatch) {
+                            if (cellVal == lookupVal) {
+                                return getCellValue(row, cols[colIndex], new Set(visited));
+                            }
+                        } else {
+                            if (cellVal <= lookupVal) {
                                 return getCellValue(row, cols[colIndex], new Set(visited));
                             }
                         }
                     }
+                
                     return "#N/A";
                 },
                 HLOOKUP: (args) => {
@@ -294,6 +338,18 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                 },
                 CONCATENATE: (args) => {
                     return args.split(",").map(a => evaluateExpression(a.trim(), visited)).join("");
+                },
+                UNIQUE: (args) => {
+                    const range = parseRange(args.trim());
+                    const values = range.map(cell =>
+                        getCellValue(cell.row, cell.col, new Set(visited))
+                    );
+                
+                    // Remove empty values
+                    const filtered = values.filter(v => v !== "");
+                
+                    // Get unique values
+                    return [...new Set(filtered)];
                 },
                 CONCAT: (args) => functions.CONCATENATE(args),
                 LEFT: (args) => {
@@ -413,20 +469,30 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
     const getValuesFromArgs = (args, visited) => {
         const values = [];
         const parts = args.split(",").map(a => a.trim());
-        
+    
         for (const part of parts) {
-            if (part.includes(":")) {
+            // ✅ NEW: detect nested function
+            if (/^[A-Z]+\(.+\)$/i.test(part)) {
+                const result = evaluateFormula("=" + part, visited);
+    
+                // If function returns array (like UNIQUE)
+                if (Array.isArray(result)) {
+                    values.push(...result);
+                } else {
+                    values.push(result);
+                }
+            } else if (part.includes(":")) {
                 // Range
                 const cells = parseRange(part);
                 for (const cell of cells) {
                     values.push(getCellValue(cell.row, cell.col, new Set(visited)));
                 }
             } else if (parseCellRef(part)) {
-                // Single cell reference
+                // Single cell
                 const cell = parseCellRef(part);
                 values.push(getCellValue(cell.row, cell.col, new Set(visited)));
             } else {
-                // Literal value
+                // Literal
                 values.push(part);
             }
         }
@@ -435,6 +501,10 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
 
     // Evaluate mathematical expression
     const evaluateExpression = (expr, visited) => {
+
+        // 🔥 HANDLE PERCENTAGES
+        expr = expr.replace(/(\d+(\.\d+)?)%/g, (_, num) => String(parseFloat(num) / 100));
+    
         if (!expr || expr === "") return "";
     
         // Handle Excel-style concatenation (&)
@@ -444,8 +514,34 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
         if (expr.startsWith('"') && expr.endsWith('"')) {
             return expr.slice(1, -1);
         }
+    
+        // 🔥 ✅ HANDLE DATE SUBTRACTION FIRST (MOVE HERE)
+        if (expr.includes("-")) {
+            const parts = expr.split("-").map(p => p.trim());
         
-        // Replace cell references with values
+            if (parts.length === 2) {
+        
+                const resolveValue = (val) => {
+                    const cell = parseCellRef(val);
+                    if (cell) {
+                        return getCellValue(cell.row, cell.col, new Set(visited));
+                    }
+                    return evaluateExpression(val, visited);
+                };
+        
+                const val1 = resolveValue(parts[0]);
+                const val2 = resolveValue(parts[1]);
+        
+                if (!isNaN(Date.parse(val1)) && !isNaN(Date.parse(val2))) {
+                    const d1 = new Date(val1);
+                    const d2 = new Date(val2);
+        
+                    return Math.floor((d1 - d2) / (1000 * 60 * 60 * 24));
+                }
+            }
+        }
+    
+        // Replace cell references
         let processedExpr = expr.replace(/([A-Z]+\d+)/gi, (match) => {
             const cell = parseCellRef(match);
             if (cell) {
@@ -454,32 +550,14 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
             }
             return match;
         });
-
+    
         // Handle comparison operators
         processedExpr = processedExpr
             .replace(/<>/g, "!==")
             .replace(/([^<>!])=/g, "$1===");
-
+    
         try {
-            const result = Function(`"use strict"; return (${processedExpr})`)();
-
-            // ✅ ADD THIS HERE (AFTER evaluation)
-            if (typeof result === "string" && Date.parse(result)) {
-                const d1 = new Date(result);
-
-                // Try to detect subtraction pattern like B3-B2
-                if (expr.includes("-")) {
-                    const parts = expr.split("-");
-                    if (parts.length === 2) {
-                        const d2 = new Date(evaluateExpression(parts[1].trim(), visited));
-                        return Math.floor((d1 - d2) / (1000 * 60 * 60 * 24));
-                    }
-                }
-
-                return d1;
-            }
-
-            return result;
+            return Function(`"use strict"; return (${processedExpr})`)();
         } catch {
             return expr;
         }
