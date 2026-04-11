@@ -7,10 +7,9 @@ import { excelSteps } from "../../components/stepsConfig";
 
 export default function ViewOptionsZoomControls() {
     const steps = [
-        "Find the Zoom slider at the bottom-right of Excel",
-        "Drag left to zoom out or right to zoom in",
-        "Click the % value to open the Zoom dialog for precise control",
-        "Choose a percentage and click OK",
+        "Locate the Zoom controls at the bottom-right",
+        "Drag the slider to change zoom level",
+        "Observe how the worksheet scales",
     ];
 
     const tips = [

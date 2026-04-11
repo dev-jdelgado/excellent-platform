@@ -19,6 +19,8 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
     const [clipboard, setClipboard] = useState(null);
     const [undoStack, setUndoStack] = useState([]);
     const [redoStack, setRedoStack] = useState([]);
+    const [zoomLevel, setZoomLevel] = useState(100);
+    const [showFunctionPanel, setShowFunctionPanel] = useState(false);
     
     // Formatting state
     const [cellFormats, setCellFormats] = useState({});
@@ -26,7 +28,7 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
     const [rowHeights, setRowHeights] = useState({});
     const [frozenRows, setFrozenRows] = useState(0);
     const [frozenCols, setFrozenCols] = useState(0);
-    
+
     // Tutorial state
     const [stepIndex, setStepIndex] = useState(0);
     const [message, setMessage] = useState("");
@@ -37,6 +39,13 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
     const currentStep = steps[stepIndex];
     const activeSheet = sheets.find(s => s.id === activeSheetId);
     const data = activeSheet?.data || [];
+
+    // 🔍 Find & Replace state
+    const [showFind, setShowFind] = useState(false);
+    const [findValue, setFindValue] = useState("");
+    const [replaceValue, setReplaceValue] = useState("");
+    const [foundCells, setFoundCells] = useState([]);
+    const [currentFindIndex, setCurrentFindIndex] = useState(0);
 
     // Generate initial data grid
     function generateInitialData(rows = 100, cols = 26) {
@@ -668,6 +677,34 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
         validate("sort");
     };
 
+    // 🗑️ REMOVE DUPLICATES
+    const removeDuplicates = () => {
+        saveState();
+    
+        const startRow = selectionRange ? selectionRange.startRow : 1;
+        const endRow = selectionRange ? selectionRange.endRow : data.length - 1;
+        const startCol = selectionRange ? selectionRange.startCol : 0;
+        const endCol = selectionRange ? selectionRange.endCol : data[0].length - 1;
+    
+        const seen = new Set();
+        const updated = [...data];
+    
+        for (let r = startRow; r <= endRow; r++) {
+            const rowSlice = updated[r].slice(startCol, endCol + 1);
+            const key = JSON.stringify(rowSlice);
+    
+            if (seen.has(key)) {
+                // ❌ Instead of removing row, CLEAR it (Excel-like behavior in grids)
+                updated[r] = new Array(updated[r].length).fill("");
+            } else {
+                seen.add(key);
+            }
+        }
+    
+        updateSheetData(updated);
+        validate("remove-duplicates");
+    };
+
     // Filter data
     const [filterColumn, setFilterColumn] = useState(null);
     const [filterValue, setFilterValue] = useState("");
@@ -736,6 +773,16 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
         validate("add-sheet");
     };
 
+    // 🔍 ZOOM CONTROLS
+    const handleZoomChange = (value) => {
+        const zoom = Math.max(50, Math.min(200, value));
+        setZoomLevel(zoom);
+        validate("zoom");
+    };
+
+    const zoomIn = () => handleZoomChange(zoomLevel + 10);
+    const zoomOut = () => handleZoomChange(zoomLevel - 10);
+
     const renameSheet = (id, name) => {
         setSheets(prev => prev.map(s => s.id === id ? { ...s, name } : s));
     };
@@ -760,6 +807,70 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
         }
     
         setEditingCell(null);
+    };
+
+    // 🧮 INSERT FUNCTION
+    const insertFunction = (fn) => {
+        setFormulaBar(`=${fn}()`);
+        setShowFunctionPanel(false);
+        validate("insert-function");
+    };
+
+    // 🔍 FIND
+    const handleFind = () => {
+        const matches = [];
+
+        data.forEach((row, r) => {
+            row.forEach((cell, c) => {
+                if (
+                    String(cell)
+                        .toLowerCase()
+                        .includes(findValue.toLowerCase())
+                ) {
+                    matches.push({ row: r, col: c });
+                }
+            });
+        });
+
+        setFoundCells(matches);
+        setCurrentFindIndex(0);
+
+        if (matches.length > 0) {
+            setSelectedCell(matches[0]);
+            validate("find");
+        }
+    };
+
+    // 🔍 NEXT
+    const handleFindNext = () => {
+        if (!foundCells.length) return;
+
+        const nextIndex = (currentFindIndex + 1) % foundCells.length;
+        setCurrentFindIndex(nextIndex);
+
+        const nextCell = foundCells[nextIndex];
+        setSelectedCell(nextCell);
+    };
+
+    // 🔁 REPLACE ONE
+    const handleReplace = () => {
+        const cell = foundCells[currentFindIndex];
+        if (!cell) return;
+
+        updateCell(cell.row, cell.col, replaceValue);
+        validate("replace");
+    };
+
+    // 🔁 REPLACE ALL
+    const handleReplaceAll = () => {
+        const updates = foundCells.map(cell => ({
+            row: cell.row,
+            col: cell.col,
+            value: replaceValue
+        }));
+
+        updateCells(updates);
+        validate("replace-all");
     };
 
     // Validation for tutorial
@@ -788,6 +899,8 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                     case "b": e.preventDefault(); formatCell("fontWeight", "bold"); validate("format-bold"); break;
                     case "i": e.preventDefault(); formatCell("fontStyle", "italic"); validate("format-bold"); break;
                     case "u": e.preventDefault(); formatCell("textDecoration", "underline"); validate("format-bold"); break;
+                    case "f": e.preventDefault(); setShowFind(true); validate("find-open"); break;
+                    case "h": e.preventDefault(); setShowFind(true); validate("replace-open"); break;
                 }
             }
             
@@ -1172,7 +1285,7 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                                 <div className="flex flex-col gap-1 pr-3 border-r">
                                     <span className="text-xs text-gray-500">Data Tools</span>
                                     <button 
-                                        onClick={() => validate("remove-duplicates")}
+                                        onClick={removeDuplicates}
                                         className="px-3 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600"
                                     >
                                         🗑️ Remove Duplicates
@@ -1308,7 +1421,15 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                 <div className="w-16 text-center bg-gray-100 border rounded px-2 py-1 text-sm font-mono">
                     {getCellRef(selectedCell.row, selectedCell.col)}
                 </div>
-                <span className="text-gray-400 font-mono">fx</span>
+                <button
+                    onClick={() => {
+                        setShowFunctionPanel(true);
+                        validate("open-insert-function");
+                    }}
+                    className="text-gray-600 font-mono px-2 hover:bg-gray-200 rounded"
+                >
+                    fx
+                </button>
                 <input
                     value={formulaBar}
                     onChange={(e) => setFormulaBar(e.target.value)}
@@ -1322,6 +1443,65 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                 />
             </div>
 
+            {showFind && (
+                <div className="bg-white border-b p-3 flex flex-wrap gap-2 items-center">
+                    <input
+                        placeholder="Find..."
+                        value={findValue}
+                        onChange={(e) => setFindValue(e.target.value)}
+                        className="border px-2 py-1 text-sm"
+                    />
+
+                    <input
+                        placeholder="Replace..."
+                        value={replaceValue}
+                        onChange={(e) => setReplaceValue(e.target.value)}
+                        className="border px-2 py-1 text-sm"
+                    />
+
+                    <button onClick={handleFind} className="px-2 py-1 bg-blue-500 text-white rounded text-sm">
+                        Find
+                    </button>
+
+                    <button onClick={handleFindNext} className="px-2 py-1 bg-gray-200 rounded text-sm">
+                        Next
+                    </button>
+
+                    <button onClick={handleReplace} className="px-2 py-1 bg-yellow-500 text-white rounded text-sm">
+                        Replace
+                    </button>
+
+                    <button onClick={handleReplaceAll} className="px-2 py-1 bg-red-500 text-white rounded text-sm">
+                        Replace All
+                    </button>
+
+                    <button onClick={() => setShowFind(false)} className="px-2 py-1 text-sm">
+                        ✖
+                    </button>
+                </div>
+            )}
+
+            {showFunctionPanel && (
+                <div className="bg-white border-b p-3 flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                        <span className="font-semibold text-sm">Insert Function</span>
+                        <button onClick={() => setShowFunctionPanel(false)}>✖</button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        {["SUM", "AVERAGE", "IF", "COUNTIF", "VLOOKUP"].map(fn => (
+                            <button
+                                key={fn}
+                                onClick={() => insertFunction(fn)}
+                                className="px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded text-sm"
+                            >
+                                {fn}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Tutorial Instruction */}
             {currentStep && (
                 <div className="px-3 py-2 text-sm text-gray-700 bg-yellow-50 border-b flex items-center gap-2">
@@ -1332,144 +1512,157 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
             )}
 
             {/* Grid Container */}
-            <div className="flex-1 overflow-auto bg-white touch-pan-x touch-pan-y" ref={gridRef}>
-                <table className="border-collapse text-sm min-w-max">
-                    <thead className="sticky top-0 z-10">
-                        <tr>
-                            <th
-                                className="bg-gray-200 border border-gray-300 sticky left-0 z-30"
-                                style={{ width: 48, minWidth: 48 }}
-                            ></th>                            
-                            {Array.from({ length: visibleColumns }, (_, i) => (
+            <div className="flex-1 overflow-auto bg-white touch-pan-x touch-pan-y" ref={gridRef}>   
+                <div
+                    style={{
+                        transform: `scale(${zoomLevel / 100})`,
+                        transformOrigin: "top left",
+                        width: `${100 / (zoomLevel / 100)}%`,
+                    }}
+                >
+                    <table className="border-collapse text-sm min-w-max">                    
+                        <thead className="sticky top-0 z-10">
+                            <tr>
                                 <th
-                                    key={i}
-                                    className={`min-w-24 bg-gray-200 border border-gray-300 text-center py-1 font-normal text-gray-600 select-none cursor-pointer hover:bg-gray-300 ${
-                                        selectedCell.col === i ? "bg-blue-100" : ""
-                                    }`}
-                                    style={{ width: columnWidths[i] || 100 }}
-                                    onClick={() => {
-                                        // Select entire column
-                                        setSelectionRange({
-                                            startRow: 0,
-                                            startCol: i,
-                                            endRow: data.length - 1,
-                                            endCol: i
-                                        });
-                                    }}
-                                >
-                                    {getColumnLetter(i)}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.slice(0, visibleRows).map((row, rowIndex) => {
-                            if (hiddenRows.has(rowIndex)) return null;
-                            
-                            return (
-                                <tr key={rowIndex}>
-                                    <td 
-                                        className={`bg-gray-200 border border-gray-300 text-center py-1 font-normal text-gray-600 sticky left-0 z-20 select-none cursor-pointer hover:bg-gray-300 ${
-                                            selectedCell.row === rowIndex ? "bg-blue-100" : ""
+                                    className="bg-gray-200 border border-gray-300 sticky left-0 z-30"
+                                    style={{ width: 48, minWidth: 48 }}
+                                ></th>                            
+                                {Array.from({ length: visibleColumns }, (_, i) => (
+                                    <th
+                                        key={i}
+                                        className={`min-w-24 bg-gray-200 border border-gray-300 text-center py-1 font-normal text-gray-600 select-none cursor-pointer hover:bg-gray-300 ${
+                                            selectedCell.col === i ? "bg-blue-100" : ""
                                         }`}
-                                        style={{ width: 48, minWidth: 48 }}
+                                        style={{ width: columnWidths[i] || 100 }}
                                         onClick={() => {
-                                            // Select entire row
+                                            // Select entire column
                                             setSelectionRange({
-                                                startRow: rowIndex,
-                                                startCol: 0,
-                                                endRow: rowIndex,
-                                                endCol: data[0].length - 1
+                                                startRow: 0,
+                                                startCol: i,
+                                                endRow: data.length - 1,
+                                                endCol: i
                                             });
                                         }}
-                                        onContextMenu={(e) => handleContextMenu(e, rowIndex, -1)}
                                     >
-                                        {rowIndex + 1}
-                                    </td>
-                                    {row.slice(0, visibleColumns).map((cell, colIndex) => {
-                                        const isSelected = selectedCell.row === rowIndex && selectedCell.col === colIndex;
-                                        const inSelection = isInSelection(rowIndex, colIndex);
-                                        const isEditing = editingCell?.row === rowIndex && editingCell?.col === colIndex;
-                                        const format = getCellFormat(rowIndex, colIndex);
-                                        
-                                        const displayValue = typeof cell === "string" && cell.startsWith("=")
-                                            ? getCellValue(rowIndex, colIndex)
-                                            : cell;
+                                        {getColumnLetter(i)}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.slice(0, visibleRows).map((row, rowIndex) => {
+                                if (hiddenRows.has(rowIndex)) return null;
+                                
+                                return (
+                                    <tr key={rowIndex}>
+                                        <td 
+                                            className={`bg-gray-200 border border-gray-300 text-center py-1 font-normal text-gray-600 sticky left-0 z-20 select-none cursor-pointer hover:bg-gray-300 ${
+                                                selectedCell.row === rowIndex ? "bg-blue-100" : ""
+                                            }`}
+                                            style={{ width: 48, minWidth: 48 }}
+                                            onClick={() => {
+                                                // Select entire row
+                                                setSelectionRange({
+                                                    startRow: rowIndex,
+                                                    startCol: 0,
+                                                    endRow: rowIndex,
+                                                    endCol: data[0].length - 1
+                                                });
+                                            }}
+                                            onContextMenu={(e) => handleContextMenu(e, rowIndex, -1)}
+                                        >
+                                            {rowIndex + 1}
+                                        </td>
+                                        {row.slice(0, visibleColumns).map((cell, colIndex) => {
+                                            const isSelected = selectedCell.row === rowIndex && selectedCell.col === colIndex;
+                                            const inSelection = isInSelection(rowIndex, colIndex);
+                                            const isEditing = editingCell?.row === rowIndex && editingCell?.col === colIndex;
+                                            const format = getCellFormat(rowIndex, colIndex);
+                                            const isFound = foundCells.some(
+                                                f => f.row === rowIndex && f.col === colIndex
+                                            );
+                                            
+                                            const displayValue = typeof cell === "string" && cell.startsWith("=")
+                                                ? getCellValue(rowIndex, colIndex)
+                                                : cell;
 
-                                        return (
-                                            <td
-                                                key={colIndex}
-                                                className={`border border-gray-300 p-0 relative ${
-                                                    inSelection ? "bg-blue-50" : ""
-                                                } ${isSelected ? "outline outline-2 outline-blue-500 -outline-offset-1 z-10" : ""}`}
-                                                style={{
-                                                    width: columnWidths[colIndex] || 100,
-                                                    height: rowHeights[rowIndex] || (isMobile ? 40 : 24),
-                                                    ...format
-                                                }}
-                                                onMouseDown={(e) => handleCellMouseDown(rowIndex, colIndex, e)}
-                                                onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
-                                                onTouchStart={() => handleCellMouseDown(rowIndex, colIndex, { shiftKey: false })}
-                                                onTouchMove={() => handleCellMouseEnter(rowIndex, colIndex)}
-                                                onDoubleClick={() => {
-                                                    setEditingCell({ row: rowIndex, col: colIndex });
-                                                    setFormulaBar(String(cell || ""));
-                                                }}
-                                                onContextMenu={(e) => handleContextMenu(e, rowIndex, colIndex)}
-                                            >
-                                                {isEditing ? (
-                                                    <input
-                                                        ref={el => { if (el) el.focus(); }}
-                                                        value={formulaBar}
-                                                        onChange={(e) => setFormulaBar(e.target.value)}
-                                                        onBlur={applyFormula}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === "Enter") {
-                                                                applyFormula();
-                                                                setSelectedCell(prev => ({ ...prev, row: prev.row + 1 }));
-                                                            }
-                                                            if (e.key === "Tab") {
-                                                                e.preventDefault();
-                                                                applyFormula();
-                                                                setSelectedCell(prev => ({ ...prev, col: prev.col + 1 }));
-                                                            }
-                                                            if (e.key === "Escape") {
-                                                                setEditingCell(null);
-                                                                setFormulaBar(String(cell || ""));
-                                                            }
-                                                        }}
-                                                        className="w-full h-full px-1 outline-none border-0 bg-white"
-                                                        style={format}
-                                                    />
-                                                ) : (
-                                                    <div 
-                                                        className="px-1 py-0.5 truncate h-full flex items-center"
-                                                        style={format}
-                                                    >
-                                                        {typeof displayValue === "number" 
-                                                            ? displayValue.toLocaleString()
-                                                            : displayValue}
-                                                    </div>
-                                                )}
-                                                
-                                                {/* Auto-fill handle */}
-                                                {isSelected && !isEditing && (
-                                                    <div 
-                                                        className="absolute bottom-0 right-0 w-2 h-2 bg-blue-500 cursor-crosshair"
-                                                        onMouseDown={(e) => {
-                                                            e.stopPropagation();
-                                                            // Start auto-fill
-                                                        }}
-                                                    />
-                                                )}
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+                                            return (
+                                                <td
+                                                    key={colIndex}
+                                                    className={`border border-gray-300 p-0 relative
+                                                        ${isFound ? "bg-yellow-100" : ""}
+                                                        ${inSelection ? "bg-blue-50" : ""}
+                                                        ${isSelected ? "outline outline-2 outline-blue-500 -outline-offset-1 z-10" : ""}
+                                                    `}
+                                                    style={{
+                                                        width: columnWidths[colIndex] || 100,
+                                                        height: rowHeights[rowIndex] || (isMobile ? 40 : 24),
+                                                        ...format
+                                                    }}
+                                                    onMouseDown={(e) => handleCellMouseDown(rowIndex, colIndex, e)}
+                                                    onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
+                                                    onTouchStart={() => handleCellMouseDown(rowIndex, colIndex, { shiftKey: false })}
+                                                    onTouchMove={() => handleCellMouseEnter(rowIndex, colIndex)}
+                                                    onDoubleClick={() => {
+                                                        setEditingCell({ row: rowIndex, col: colIndex });
+                                                        setFormulaBar(String(cell || ""));
+                                                    }}
+                                                    onContextMenu={(e) => handleContextMenu(e, rowIndex, colIndex)}
+                                                >
+                                                    {isEditing ? (
+                                                        <input
+                                                            ref={el => { if (el) el.focus(); }}
+                                                            value={formulaBar}
+                                                            onChange={(e) => setFormulaBar(e.target.value)}
+                                                            onBlur={applyFormula}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                    applyFormula();
+                                                                    setSelectedCell(prev => ({ ...prev, row: prev.row + 1 }));
+                                                                }
+                                                                if (e.key === "Tab") {
+                                                                    e.preventDefault();
+                                                                    applyFormula();
+                                                                    setSelectedCell(prev => ({ ...prev, col: prev.col + 1 }));
+                                                                }
+                                                                if (e.key === "Escape") {
+                                                                    setEditingCell(null);
+                                                                    setFormulaBar(String(cell || ""));
+                                                                }
+                                                            }}
+                                                            className="w-full h-full px-1 outline-none border-0 bg-white"
+                                                            style={format}
+                                                        />
+                                                    ) : (
+                                                        <div 
+                                                            className="px-1 py-0.5 truncate h-full flex items-center"
+                                                            style={format}
+                                                        >
+                                                            {typeof displayValue === "number" 
+                                                                ? displayValue.toLocaleString()
+                                                                : displayValue}
+                                                        </div>
+                                                    )}
+                                                    
+                                                    {/* Auto-fill handle */}
+                                                    {isSelected && !isEditing && (
+                                                        <div 
+                                                            className="absolute bottom-0 right-0 w-2 h-2 bg-blue-500 cursor-crosshair"
+                                                            onMouseDown={(e) => {
+                                                                e.stopPropagation();
+                                                                // Start auto-fill
+                                                            }}
+                                                        />
+                                                    )}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Context Menu */}
@@ -1573,7 +1766,7 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
             </div>
 
             {/* Status Bar */}
-            <div className="bg-green-700 text-white px-4 py-1 text-xs flex justify-between">
+            <div className="bg-green-700 text-white px-4 py-1 text-xs flex justify-between items-center">                
                 <div className="flex gap-4">
                     {selectionRange && (
                         <>
@@ -1614,7 +1807,21 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                         </>
                     )}
                 </div>
-                <span>Ready</span>
+                <div className="flex items-center gap-2">
+                    <button onClick={zoomOut} className="px-2">➖</button>
+
+                    <input
+                        type="range"
+                        min="50"
+                        max="200"
+                        value={zoomLevel}
+                        onChange={(e) => handleZoomChange(Number(e.target.value))}
+                    />
+
+                    <button onClick={zoomIn} className="px-2">➕</button>
+
+                    <span>{zoomLevel}%</span>
+                </div>
             </div>
         </div>
     );

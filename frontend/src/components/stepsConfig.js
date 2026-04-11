@@ -14,7 +14,9 @@ export const excelSteps = {
         { instruction: "Press Ctrl+V to Paste", action: "paste" },
     ],
     findReplace: [
-        { instruction: "Select a cell and start editing", action: "formula" },
+        { instruction: "Press Ctrl+F", action: "find-open" },
+        { instruction: "Click Find", action: "find" },
+        { instruction: "Click Replace", action: "replace" },
     ],
 
     // DATA MANAGEMENT
@@ -29,7 +31,7 @@ export const excelSteps = {
     ],
     removeDuplicates: [
         { instruction: "Click Data tab", action: "click-tab", target: "data" },
-        { instruction: "Click Remove Duplicates button", action: "remove-duplicates" },
+        { instruction: "Click Remove Duplicates", action: "remove-duplicates" },
     ],
 
     // INSERT
@@ -54,9 +56,11 @@ export const excelSteps = {
 
     // FORMULA TOOLS
     insertFunction: [
-        { instruction: "Click Formulas tab", action: "click-tab", target: "formulas" },
-        { instruction: "Insert function (fx)", action: "formula" },
+        { instruction: "Select a cell", action: "select-cell" },
+        { instruction: "Click fx button", action: "open-insert-function" },
+        { instruction: "Choose a function", action: "insert-function" },
     ],
+    
     formulaAuditing: [
         { instruction: "Click Formulas tab", action: "click-tab", target: "formulas" },
         { instruction: "Click Trace Precedents/Dependents", action: "formula-audit" },
@@ -68,7 +72,7 @@ export const excelSteps = {
         { instruction: "Click ❄️ Freeze", action: "freeze" },
     ],
     zoomControls: [
-        { instruction: "Click View tab", action: "click-tab", target: "view" },
+        { instruction: "Adjust zoom using slider", action: "zoom" },
     ],
 
     // FORMULAS (UPDATED FOR EXCEL ENGINE)

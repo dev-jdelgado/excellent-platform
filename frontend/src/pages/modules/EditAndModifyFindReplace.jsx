@@ -7,9 +7,9 @@ import { excelSteps } from "../../components/stepsConfig";
 
 export default function EditAndModifyCopyPaste() {
     const steps = [
-        "Ctrl+F to open search bar",
-        "Enter text you want to search",
-        "Choose action (Find or Replace)",
+        "Click Home tab",
+        "Press Ctrl+F (search)",
+        "Type the value to find",
     ];
 
     const tips = [

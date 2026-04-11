@@ -7,10 +7,9 @@ import { excelSteps } from "../../components/stepsConfig";
 
 export default function FormulaToolsInsertFunction() {
     const steps = [
-        "Select the cell where you want the result to appear",
-        "Click the fx (Insert Function) button beside the formula bar",
-        "Search or browse a category, then choose a function",
-        "Fill in the arguments, preview the result, then click OK",
+        "Select a cell where result will appear",
+        "Click the fx (Insert Function) button",
+        "Choose a function from the panel",
     ];
 
     const tips = [
