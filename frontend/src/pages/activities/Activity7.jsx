@@ -1,49 +1,112 @@
 import React from "react";
-import ActivityPage from "./ActivityPage";
+import Navbar from "../../components/Navbar";
+import { Link } from "react-router-dom";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-const norm = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
+import ExcelEngine from "../../components/ExcelEngine";
 
-export default function Activity7() {
-  const expectedUnique = 4;
+/* ---------- Pill ---------- */
+function Pill({ children, tone = "gray" }) {
+  const tones = {
+    gray: "bg-gray-100 text-gray-700 border-gray-200",
+    emerald: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    amber: "bg-amber-50 text-amber-800 border-amber-200",
+    rose: "bg-rose-50 text-rose-800 border-rose-200",
+  };
 
   return (
-    <ActivityPage
-      no={7}
-      title= "Remove Duplicates Count"
-      tip="Identify unique values after removing duplicates."
-      difficulty="Easy"
-      subtitle="Remove Duplicates Count"
-      scenario={
-        <>
-          How many unique cities are in the list after removing duplicates?
-        </>
-      }
-      letters={["A"]}
-      sheetHeaders={["City"]}
-      rows={[
-        { row: "2", cells: ["Manila"] },
-        { row: "3", cells: ["Cebu"] },
-        { row: "4", cells: ["Davao"] },
-        { row: "5", cells: ["Cebu"] },
-        { row: "6", cells: ["Manila"] },
-        { row: "7", cells: ["Baguio"] },
-      ]}
-      tableMaxWidth="max-w-xl"
-      placeholder='Type your answer (e.g., 4) or a formula like =COUNTA(UNIQUE(A2:A7))'
-      hintBody={
-        <>
-          You can use <span className="font-mono">UNIQUE</span> (if available) then count, or
-          remove duplicates manually and count remaining unique cities.
-        </>
-      }
-      hintFormula={`=COUNTA(UNIQUE(A2:A7))`}
-      onCheck={(ans) => {
-        const a = norm(ans);
-        const ok = a.includes(String(expectedUnique)) || a.includes("unique(");
-        return ok
-          ? { ok: true, message: `Correct! There are ${expectedUnique} unique cities.` }
-          : { ok: false, message: "Not quite. Count unique cities after duplicates are removed." };
-      }}
-    />
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}>
+      {children}
+    </span>
+  );
+}
+
+function difficultyTone(difficulty) {
+  if (difficulty === "Medium") return "amber";
+  if (difficulty === "Hard") return "rose";
+  return "gray";
+}
+
+const initialData = [
+  ["City", "", "", ""],
+  ["Manila", "", "", ""],
+  ["Cebu", "", "", ""],
+  ["Davao", "", "", ""],
+  ["Cebu", "", "", ""],
+  ["Manila", "", "", ""],
+  ["Baguio", "", "", ""],
+  ["", "", "", ""],
+  ["", "", "", ""],
+];
+
+const steps = [
+  { instruction: "Select cell A8", action: "select-cell", target: "A8" },
+  { instruction: "Type =COUNTA(UNIQUE(A2:A7))", action: "formula" },
+];
+
+export default function Activity7() {
+  return (
+    <>
+      <Navbar />
+
+      <div className="min-h-screen bg-gray-50">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-6 pb-28">
+          <main>
+            {/* Back */}
+            <Link
+              to="/activities"
+              className="inline-flex items-center gap-2 text-sm text-primary hover:text-gray-900 font-semibold"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+              Back to all activities
+            </Link>
+
+            {/* Title */}
+            <div className="mt-4">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  Activity 7: Remove Duplicates Count
+                </h1>
+                <Pill tone={difficultyTone("Easy")}>Easy</Pill>
+              </div>
+
+              <p className="text-sm text-gray-600 mt-1">
+                Identify unique values after removing duplicates.
+              </p>
+            </div>
+
+            {/* Scenario */}
+            <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-l-4 border-emerald-600 p-5">
+                <p className="font-semibold text-gray-900">Scenario</p>
+                <div className="mt-2 text-sm text-gray-600">
+                  How many unique cities are in the list after removing duplicates?
+                </div>
+              </div>
+            </div>
+
+            {/* Excel Engine */}
+            <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="font-semibold text-gray-900">Interactive Sheet</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Follow the steps inside the Excel simulator
+              </p>
+
+              <div className="mt-4">
+                <ExcelEngine steps={steps} initialData={initialData} />
+              </div>
+            </div>
+
+            {/* Hint */}
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <p className="font-semibold text-emerald-800">Hint</p>
+              <code className="block mt-2 text-sm bg-white border rounded px-3 py-2">
+                {'=COUNTA(UNIQUE(A2:A7))'}
+              </code>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
   );
 }

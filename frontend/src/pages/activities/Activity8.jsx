@@ -1,49 +1,108 @@
 import React from "react";
-import ActivityPage from "./ActivityPage";
+import Navbar from "../../components/Navbar";
+import { Link } from "react-router-dom";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-const norm = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
+import ExcelEngine from "../../components/ExcelEngine";
 
-export default function Activity8() {
-  const expected = "doe, john";
+/* ---------- Pill ---------- */
+function Pill({ children, tone = "gray" }) {
+  const tones = {
+    gray: "bg-gray-100 text-gray-700 border-gray-200",
+    emerald: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    amber: "bg-amber-50 text-amber-800 border-amber-200",
+    rose: "bg-rose-50 text-rose-800 border-rose-200",
+  };
 
   return (
-    <ActivityPage
-      no={8}
-      title= "Text Manipulation"
-      tip="Use text functions like CONCAT or TEXTJOIN."
-      difficulty="Medium"
-      subtitle="Text Manipulation"
-      scenario={
-        <>
-          Combine First Name and Last Name with a comma and space{" "}
-          <span className="font-semibold">(Last, First)</span>. What’s the result for row 2?
-        </>
-      }
-      letters={["A", "B"]}
-      sheetHeaders={["First Name", "Last Name"]}
-      rows={[
-        { row: "2", cells: ["John", "Doe"] },
-        { row: "3", cells: ["Maria", "Santos"] },
-        { row: "4", cells: ["Leo", "Reyes"] },
-      ]}
-      tableMaxWidth="max-w-xl"
-      placeholder='Type your formula or answer (e.g., =B2&", "&A2 or Doe, John)'
-      hintBody={
-        <>
-          Use <span className="font-mono">&amp;</span> or <span className="font-semibold">CONCAT</span>:
-          Last Name + ", " + First Name.
-        </>
-      }
-      hintFormula={`=B2&", "&A2`}
-      onCheck={(ans) => {
-        const a = norm(ans);
-        const ok =
-          a.includes(expected) ||
-          a.includes("b2") && a.includes("a2") && (a.includes("&") || a.includes("concat"));
-        return ok
-          ? { ok: true, message: `Correct! Row 2 result is "Doe, John".` }
-          : { ok: false, message: "Not quite. Format should be Last, First (with comma + space)." };
-      }}
-    />
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}>
+      {children}
+    </span>
+  );
+}
+
+function difficultyTone(difficulty) {
+  if (difficulty === "Medium") return "amber";
+  if (difficulty === "Hard") return "rose";
+  return "gray";
+}
+
+const initialData = [
+  ["First", "Last", "", "", ""],
+  ["John", "Doe", "", "", ""],
+  ["Maria", "Santos", "", "", ""],
+  ["", "", "", "", ""],
+];
+
+const steps = [
+  { instruction: "Select cell C2", action: "select-cell", target: "C2" },
+  { instruction: 'Type =B2&", "&A2', action: "formula" },
+];
+
+export default function Activity8() {
+  return (
+    <>
+      <Navbar />
+
+      <div className="min-h-screen bg-gray-50">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-6 pb-28">
+          <main>
+            {/* Back */}
+            <Link
+              to="/activities"
+              className="inline-flex items-center gap-2 text-sm text-primary hover:text-gray-900 font-semibold"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+              Back to all activities
+            </Link>
+
+            {/* Title */}
+            <div className="mt-4">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  Activity 8: Text Manipulation
+                </h1>
+                <Pill tone={difficultyTone("Medium")}>Medium</Pill>
+              </div>
+
+              <p className="text-sm text-gray-600 mt-1">
+                Use text functions like CONCAT or TEXTJOIN.
+              </p>
+            </div>
+
+            {/* Scenario */}
+            <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-l-4 border-emerald-600 p-5">
+                <p className="font-semibold text-gray-900">Scenario</p>
+                <div className="mt-2 text-sm text-gray-600">
+                  Use <span className="font-mono">&amp;</span> or <span className="font-semibold">CONCAT</span>:
+                  Last Name + ", " + First Name.
+                </div>
+              </div>
+            </div>
+
+            {/* Excel Engine */}
+            <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="font-semibold text-gray-900">Interactive Sheet</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Follow the steps inside the Excel simulator
+              </p>
+
+              <div className="mt-4">
+                <ExcelEngine steps={steps} initialData={initialData} />
+              </div>
+            </div>
+
+            {/* Hint */}
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <p className="font-semibold text-emerald-800">Hint</p>
+              <code className="block mt-2 text-sm bg-white border rounded px-3 py-2">
+                {'=B2&", "&A2'}
+              </code>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
   );
 }

@@ -201,6 +201,50 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                         return matchesCriteria(val, criteria);
                     }).length;
                 },
+                AVERAGEIF: (args) => {
+                    const parts = args.split(",").map(a => a.trim());
+                    const range = parseRange(parts[0]);
+                    const criteria = parts[1].replace(/"/g, "");
+                    const avgRange = parts[2] ? parseRange(parts[2]) : range;
+                
+                    let sum = 0;
+                    let count = 0;
+                
+                    range.forEach((cell, i) => {
+                        const val = getCellValue(cell.row, cell.col, new Set(visited));
+                
+                        if (matchesCriteria(val, criteria)) {
+                            const avgCell = avgRange[i] || cell;
+                            const num = parseFloat(getCellValue(avgCell.row, avgCell.col, new Set(visited)));
+                
+                            if (!isNaN(num)) {
+                                sum += num;
+                                count++;
+                            }
+                        }
+                    });
+                
+                    return count ? sum / count : 0;
+                },
+                COUNTIFS: (args) => {
+                    const parts = args.split(",").map(a => a.trim());
+                    let count = 0;
+                
+                    for (let i = 0; i < parts.length; i += 2) {
+                        const range = parseRange(parts[i]);
+                        const criteria = parts[i + 1].replace(/"/g, "");
+                
+                        range.forEach((cell, idx) => {
+                            const val = getCellValue(cell.row, cell.col, new Set(visited));
+                
+                            if (matchesCriteria(val, criteria)) {
+                                count++;
+                            }
+                        });
+                    }
+                
+                    return count;
+                },
                 VLOOKUP: (args) => {
                     const parts = args.split(",").map(a => a.trim());
                     const lookupVal = evaluateExpression(parts[0], visited);
@@ -383,7 +427,10 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
     // Evaluate mathematical expression
     const evaluateExpression = (expr, visited) => {
         if (!expr || expr === "") return "";
-        
+    
+        // Handle Excel-style concatenation (&)
+        expr = expr.replace(/&/g, "+");
+    
         // Handle string literals
         if (expr.startsWith('"') && expr.endsWith('"')) {
             return expr.slice(1, -1);
@@ -405,8 +452,24 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
             .replace(/([^<>!])=/g, "$1===");
 
         try {
-            // Safe evaluation
             const result = Function(`"use strict"; return (${processedExpr})`)();
+
+            // ✅ ADD THIS HERE (AFTER evaluation)
+            if (typeof result === "string" && Date.parse(result)) {
+                const d1 = new Date(result);
+
+                // Try to detect subtraction pattern like B3-B2
+                if (expr.includes("-")) {
+                    const parts = expr.split("-");
+                    if (parts.length === 2) {
+                        const d2 = new Date(evaluateExpression(parts[1].trim(), visited));
+                        return Math.floor((d1 - d2) / (1000 * 60 * 60 * 24));
+                    }
+                }
+
+                return d1;
+            }
+
             return result;
         } catch {
             return expr;
@@ -425,7 +488,7 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
             const regex = new RegExp("^" + criteria.replace(/\*/g, ".*").replace(/\?/g, ".") + "$", "i");
             return regex.test(String(value));
         }
-        return value == criteria;
+        return String(value).toLowerCase() === String(criteria).toLowerCase();
     };
 
     // Save state for undo

@@ -1,66 +1,112 @@
 import React from "react";
-import ActivityPage from "./ActivityPage";
+import Navbar from "../../components/Navbar";
+import { Link } from "react-router-dom";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-const norm = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
+import ExcelEngine from "../../components/ExcelEngine";
 
-export default function Activity3() {
-  const expectedCount = 3;
-  const expectedPercent = 60; // %
+/* ---------- Pill ---------- */
+function Pill({ children, tone = "gray" }) {
+  const tones = {
+    gray: "bg-gray-100 text-gray-700 border-gray-200",
+    emerald: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    amber: "bg-amber-50 text-amber-800 border-amber-200",
+    rose: "bg-rose-50 text-rose-800 border-rose-200",
+  };
 
   return (
-    <ActivityPage
-      no={3}
-      title="Grade Analysis"
-      tip="Use COUNTIF or similar functions to analyze score ranges."
-      difficulty="Medium"
-      subtitle="Grade Analysis"
-      scenario={
-        <>
-          Count how many students score above <span className="font-semibold">85%</span>{" "}
-          and calculate what percentage they represent.
-        </>
-      }
-      letters={["A", "B"]}
-      sheetHeaders={["Student", "Score (%)"]}
-      rows={[
-        { row: "2", cells: ["Ana", "90"] },
-        { row: "3", cells: ["Ben", "82"] },
-        { row: "4", cells: ["Cara", "88"] },
-        { row: "5", cells: ["Dan", "75"] },
-        { row: "6", cells: ["Ella", "95"] },
-      ]}
-      tableMaxWidth="max-w-xl"
-      placeholder='Type your formula or answer (e.g., COUNT above 85 and %). Example: "3 students, 60%"'
-      hintBody={
-        <>
-          Use <span className="font-semibold">COUNTIF</span> to count scores above 85, then divide
-          by total students to get the percentage.
-        </>
-      }
-      hintFormula={`=COUNTIF(B2:B6,">85") / COUNTA(B2:B6)`}
-      onCheck={(ans) => {
-        const a = norm(ans);
-        const hasCount = a.includes(String(expectedCount));
-        const hasPercent =
-          a.includes("60%") || a.includes("60") || a.includes("0.6");
-        const hasCountif = a.includes("countif(");
-        if ((hasCount && hasPercent) || (hasCountif && hasPercent)) {
-          return {
-            ok: true,
-            message: `Correct! ${expectedCount} students above 85%, which is ${expectedPercent}% of the class.`,
-          };
-        }
-        if (hasCount) {
-          return {
-            ok: true,
-            message: `Count is correct (${expectedCount}). Bonus: percentage is ${expectedPercent}%.`,
-          };
-        }
-        return {
-          ok: false,
-          message: `Not quite. Count above 85% then compute percent out of 5 students.`,
-        };
-      }}
-    />
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}>
+      {children}
+    </span>
+  );
+}
+
+function difficultyTone(difficulty) {
+  if (difficulty === "Medium") return "amber";
+  if (difficulty === "Hard") return "rose";
+  return "gray";
+}
+
+const initialData = [
+  ["Student", "Score", "", "", "", ""],
+  ["Ana", 90, "", "", "", ""],
+  ["Ben", 82, "", "", "", ""],
+  ["Cara", 88, "", "", "", ""],
+  ["Dan", 75, "", "", "", ""],
+  ["Ella", 95, "", "", "", ""],
+  ["", "", "", "", "", ""],
+  ["", "", "", "", "", ""],
+  ["", "", "", "", "", ""],
+];
+
+const steps = [
+  { instruction: "Select cell B7", action: "select-cell", target: "B7" },
+  { instruction: 'Type =COUNTIF(B2:B6,">85")', action: "formula" },
+];
+
+export default function Activity3() {
+  return (
+    <>
+      <Navbar />
+
+      <div className="min-h-screen bg-gray-50">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-6 pb-28">
+          <main>
+            {/* Back */}
+            <Link
+              to="/activities"
+              className="inline-flex items-center gap-2 text-sm text-primary hover:text-gray-900 font-semibold"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+              Back to all activities
+            </Link>
+
+            {/* Title */}
+            <div className="mt-4">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  Activity 3: Grade Analysis
+                </h1>
+                <Pill tone={difficultyTone("Medium")}>Medium</Pill>
+              </div>
+
+              <p className="text-sm text-gray-600 mt-1">
+                Use COUNTIF or similar functions to analyze score ranges.
+              </p>
+            </div>
+
+            {/* Scenario */}
+            <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-l-4 border-emerald-600 p-5">
+                <p className="font-semibold text-gray-900">Scenario</p>
+                <div className="mt-2 text-sm text-gray-600">
+                  Count how many students score above <span className="font-semibold">85%</span>{" "}.
+                </div>
+              </div>
+            </div>
+
+            {/* Excel Engine */}
+            <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="font-semibold text-gray-900">Interactive Sheet</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Follow the steps inside the Excel simulator
+              </p>
+
+              <div className="mt-4">
+                <ExcelEngine steps={steps} initialData={initialData} />
+              </div>
+            </div>
+
+            {/* Hint */}
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <p className="font-semibold text-emerald-800">Hint</p>
+              <code className="block mt-2 text-sm bg-white border rounded px-3 py-2">
+                {'=COUNTIF(B2:B6,">85")'}
+              </code>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
   );
 }

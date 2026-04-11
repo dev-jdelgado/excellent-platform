@@ -1,48 +1,113 @@
 import React from "react";
-import ActivityPage from "./ActivityPage";
+import Navbar from "../../components/Navbar";
+import { Link } from "react-router-dom";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-const norm = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
+import ExcelEngine from "../../components/ExcelEngine";
 
-export default function Activity4() {
-  const expectedPrice = 3500;
+/* ---------- Pill ---------- */
+function Pill({ children, tone = "gray" }) {
+  const tones = {
+    gray: "bg-gray-100 text-gray-700 border-gray-200",
+    emerald: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    amber: "bg-amber-50 text-amber-800 border-amber-200",
+    rose: "bg-rose-50 text-rose-800 border-rose-200",
+  };
 
   return (
-    <ActivityPage
-      no={4}
-      title="Product Lookup"
-      tip="Use VLOOKUP or XLOOKUP to find values from a table."
-      difficulty="Medium"
-      subtitle="Product Lookup"
-      scenario={
-        <>
-          Use <span className="font-semibold">VLOOKUP</span> to find the price of{" "}
-          <span className="font-semibold">Keyboard</span> (Product Code:{" "}
-          <span className="font-mono">P003</span>).
-        </>
-      }
-      letters={["A", "B", "C"]}
-      sheetHeaders={["Product Code", "Product", "Price"]}
-      rows={[
-        { row: "2", cells: ["P001", "Laptop", "25000"] },
-        { row: "3", cells: ["P002", "Mouse", "1200"] },
-        { row: "4", cells: ["P003", "Keyboard", "3500"] },
-        { row: "5", cells: ["P004", "Monitor", "18000"] },
-      ]}
-      placeholder='Type your formula or answer (e.g., =VLOOKUP("P003",A2:C5,3,FALSE) or 3500)'
-      hintBody={
-        <>
-          Lookup <span className="font-mono">P003</span> in the first column and return the{" "}
-          <span className="font-semibold">3rd</span> column (Price).
-        </>
-      }
-      hintFormula={`=VLOOKUP("P003",A2:C5,3,FALSE)`}
-      onCheck={(ans) => {
-        const a = norm(ans).replace(/,/g, "");
-        const ok = a.includes(String(expectedPrice)) || a.includes("vlookup(");
-        return ok
-          ? { ok: true, message: `Correct! Keyboard price = ${expectedPrice}.` }
-          : { ok: false, message: "Not quite. Use VLOOKUP to return the Price for P003." };
-      }}
-    />
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}>
+      {children}
+    </span>
+  );
+}
+
+function difficultyTone(difficulty) {
+  if (difficulty === "Medium") return "amber";
+  if (difficulty === "Hard") return "rose";
+  return "gray";
+}
+
+const initialData = [
+  ["Code", "Product", "Price", "", "", ""],
+  ["P001", "Laptop", 25000, "", "", ""],
+  ["P002", "Mouse", 1200, "", "", ""],
+  ["P003", "Keyboard", 3500, "", "", ""],
+  ["P004", "Monitor", 18000, "", "", ""],
+  ["", "", "", "", "", ""],
+  ["", "", "", "", "", ""],
+  ["", "", "", "", "", ""],
+];
+
+const steps = [
+  { instruction: "Select cell D2", action: "select-cell", target: "D2" },
+  { instruction: 'Type =VLOOKUP("P003",A2:C5,3,FALSE)', action: "formula" },
+];
+
+export default function Activity4() {
+  return (
+    <>
+      <Navbar />
+
+      <div className="min-h-screen bg-gray-50">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-6 pb-28">
+          <main>
+            {/* Back */}
+            <Link
+              to="/activities"
+              className="inline-flex items-center gap-2 text-sm text-primary hover:text-gray-900 font-semibold"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+              Back to all activities
+            </Link>
+
+            {/* Title */}
+            <div className="mt-4">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  Activity 4: Product Lookup
+                </h1>
+                <Pill tone={difficultyTone("Medium")}>Medium</Pill>
+              </div>
+
+              <p className="text-sm text-gray-600 mt-1">
+                Use VLOOKUP or XLOOKUP to find values from a table.
+              </p>
+            </div>
+
+            {/* Scenario */}
+            <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-l-4 border-emerald-600 p-5">
+                <p className="font-semibold text-gray-900">Scenario</p>
+                <div className="mt-2 text-sm text-gray-600">
+                  Use <span className="font-semibold">VLOOKUP</span> to find the price of{" "}
+                  <span className="font-semibold">Keyboard</span> (Product Code:{" "}
+                  <span className="font-mono">P003</span>).
+                </div>
+              </div>
+            </div>
+
+            {/* Excel Engine */}
+            <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="font-semibold text-gray-900">Interactive Sheet</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Follow the steps inside the Excel simulator
+              </p>
+
+              <div className="mt-4">
+                <ExcelEngine steps={steps} initialData={initialData} />
+              </div>
+            </div>
+
+            {/* Hint */}
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <p className="font-semibold text-emerald-800">Hint</p>
+              <code className="block mt-2 text-sm bg-white border rounded px-3 py-2">
+                =VLOOKUP("P003",A2:C5,3,FALSE)
+              </code>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
   );
 }

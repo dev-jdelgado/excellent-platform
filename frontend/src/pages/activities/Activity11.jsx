@@ -1,243 +1,176 @@
-import React, { useState } from "react";
-import ActivityPage from "./ActivityPage";
+import React from "react";
+import Navbar from "../../components/Navbar";
+import { Link } from "react-router-dom";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-const normalize = (s) => (s || "").trim().toLowerCase();
+import ExcelEngine from "../../components/ExcelEngine";
+
+/* ---------- Pill ---------- */
+function Pill({ children, tone = "gray" }) {
+  const tones = {
+    gray: "bg-gray-100 text-gray-700 border-gray-200",
+    emerald: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    amber: "bg-amber-50 text-amber-800 border-amber-200",
+    rose: "bg-rose-50 text-rose-800 border-rose-200",
+  };
+
+  return (
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}>
+      {children}
+    </span>
+  );
+}
+
+function difficultyTone(difficulty) {
+  if (difficulty === "Medium") return "amber";
+  if (difficulty === "Hard") return "rose";
+  return "gray";
+}
+
+const initialData = [
+  ["Lecture Component", "Score", "Weight", "Lab Component", "Score", "Weight", "", ""],
+  ["Performance Output", "90", "40%", "Performance Output", "92", "40%", "", ""],
+  ["Major Exam", "85", "30%", "Major Assessment", "88", "30%", "", ""], 
+  ["Quiz", "80", "15%", "Peer Assessment", "90", "15%", "", ""],
+  ["Recitation", "95", "15%", "Practice", "94", "15%", "", ""], 
+  ["Lecture Total", "", "100%", "Lab Total", "", "100%", "", ""], 
+  ["Final Grade", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+];
+
+const steps = [
+    { instruction: "Select cell B6", action: "select-cell", target: "B6" },
+    { instruction: "Compute Lecture Grade", action: "formula" },
+    { instruction: "Select cell E6", action: "select-cell", target: "E6" },
+    { instruction: "Compute Lab Grade", action: "formula" },
+    { instruction: "Select cell B7", action: "select-cell", target: "B7" },
+    { instruction: "Compute Total Grade", action: "formula" },
+];
 
 export default function Activity11() {
-    const [step, setStep] = useState(1);
+  return (
+    <>
+      <Navbar />
 
-    const lectureScores = [90, 85, 80, 95];
-    const lectureWeights = [0.40, 0.30, 0.15, 0.15];
+      <div className="min-h-screen bg-gray-50">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-6 pb-28">
+          <main>
+            {/* Back */}
+            <Link
+              to="/activities"
+              className="inline-flex items-center gap-2 text-sm text-primary hover:text-gray-900 font-semibold"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+              Back to all activities
+            </Link>
 
-    const labScores = [92, 88, 90, 94];
-    const labWeights = [0.40, 0.30, 0.15, 0.15];
+            {/* Title */}
+            <div className="mt-4">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  Activity 11: Grade Computation
+                </h1>
+                <Pill tone={difficultyTone("Medium")}>Hard</Pill>
+              </div>
 
-    const lectureGrade = lectureScores.reduce(
-        (sum, score, i) => sum + score * lectureWeights[i],
-        0
-    );
-
-    const labGrade = labScores.reduce(
-        (sum, score, i) => sum + score * labWeights[i],
-        0
-    );
-
-    const finalGrade = (lectureGrade * 0.6 + labGrade * 0.4).toFixed(2);
-
-    const acceptedFormulas = [
-        "=sumproduct(b2:b5,c2:c5)",
-        "=sumproduct(e2:e5,f2:f5)",
-        "=(b6*60%)+(e6*40%)",
-        "=b6*0.6+e6*0.4",
-    ];
-
-    return (
-        <ActivityPage
-        no={11}
-        title="Grade Computation"
-        difficulty="Hard"
-        subtitle="Compute the Final Grade"
-        tip="Use SUMPRODUCT to multiply scores with weights."
-
-        scenario={
-            <>
-            Compute the student's <span className="font-semibold">final grade</span>
-            using the grading system below.
-
-            <div className="mt-4 overflow-x-auto">
-                <table className="border border-gray-300 text-sm text-center w-full max-w-2xl">
-                    
-                    <thead>
-                    <tr className="bg-gray-100">
-                        <th colSpan="2" className="border p-2 font-semibold">
-                            Lecture (60%)
-                        </th>
-                        <th colSpan="2" className="border p-2 font-semibold">
-                            Laboratory (40%)
-                        </th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <tr>
-                        <td className="border p-2">Performance Output</td>
-                        <td className="border p-2">40%</td>
-
-                        <td className="border p-2">Performance Output</td>
-                        <td className="border p-2">40%</td>
-                    </tr>
-
-                    <tr>
-                        <td className="border p-2">Major Examination</td>
-                        <td className="border p-2">30%</td>
-
-                        <td className="border p-2">Major Assessment</td>
-                        <td className="border p-2">30%</td>
-                    </tr>
-
-                    <tr>
-                        <td className="border p-2">Quiz</td>
-                        <td className="border p-2">15%</td>
-
-                        <td className="border p-2">Peer Assessment</td>
-                        <td className="border p-2">15%</td>
-                    </tr>
-
-                    <tr>
-                        <td className="border p-2">Recitation</td>
-                        <td className="border p-2">15%</td>
-
-                        <td className="border p-2">Practice</td>
-                        <td className="border p-2">15%</td>
-                    </tr>
-
-                    <tr className="font-semibold bg-gray-50">
-                        <td className="border p-2">Total</td>
-                        <td className="border p-2">100</td>
-
-                        <td className="border p-2">Total</td>
-                        <td className="border p-2">100</td>
-                    </tr>
-                    </tbody>
-
-                </table>
+              <p className="text-sm text-gray-600 mt-1">
+                Use SUMPRODUCT to multiply scores with weights.
+              </p>
             </div>
 
-            <div className="mt-4 text-sm text-gray-700">
-                Step {step} of 3
+            {/* Scenario */}
+            <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-l-4 border-emerald-600 p-5">
+                <p className="font-semibold text-gray-900">Scenario</p>
+                <div className="mt-2 text-sm text-gray-600">
+                    Compute the student's <span className="font-semibold">final grade</span>
+                    using the grading system below.
+                    <div className="mt-4 overflow-x-auto">
+                        <table className="border border-gray-300 text-sm text-center w-full max-w-2xl">
+                            
+                            <thead>
+                            <tr className="bg-gray-100">
+                                <th colSpan="2" className="border p-2 font-semibold">
+                                    Lecture (60%)
+                                </th>
+                                <th colSpan="2" className="border p-2 font-semibold">
+                                    Laboratory (40%)
+                                </th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td className="border p-2">Performance Output</td>
+                                <td className="border p-2">40%</td>
+
+                                <td className="border p-2">Performance Output</td>
+                                <td className="border p-2">40%</td>
+                            </tr>
+
+                            <tr>
+                                <td className="border p-2">Major Examination</td>
+                                <td className="border p-2">30%</td>
+
+                                <td className="border p-2">Major Assessment</td>
+                                <td className="border p-2">30%</td>
+                            </tr>
+
+                            <tr>
+                                <td className="border p-2">Quiz</td>
+                                <td className="border p-2">15%</td>
+
+                                <td className="border p-2">Peer Assessment</td>
+                                <td className="border p-2">15%</td>
+                            </tr>
+
+                            <tr>
+                                <td className="border p-2">Recitation</td>
+                                <td className="border p-2">15%</td>
+
+                                <td className="border p-2">Practice</td>
+                                <td className="border p-2">15%</td>
+                            </tr>
+
+                            <tr className="font-semibold bg-gray-50">
+                                <td className="border p-2">Total</td>
+                                <td className="border p-2">100</td>
+
+                                <td className="border p-2">Total</td>
+                                <td className="border p-2">100</td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+              </div>
             </div>
-            </>
-        }
 
-        letters={["A", "B", "C", "D", "E", "F"]}
-        sheetHeaders={[
-            "Lecture Component",
-            "Score",
-            "Weight",
-            "Lab Component",
-            "Score",
-            "Weight"
-        ]}
-        rows={[
-        {
-            row: "2",
-            cells: [
-            "Performance Output",
-            "90",
-            "40%",
-            "Performance Output",
-            "92",
-            "40%",
-            ],
-        },
-        {
-            row: "3",
-            cells: [
-            "Major Exam",
-            "85",
-            "30%",
-            "Major Assessment",
-            "88",
-            "30%",
-            ],
-        },
-        {
-            row: "4",
-            cells: [
-            "Quiz",
-            "80",
-            "15%",
-            "Peer Assessment",
-            "90",
-            "15%",
-            ],
-        },
-        {
-            row: "5",
-            cells: [
-            "Recitation",
-            "95",
-            "15%",
-            "Practice",
-            "94",
-            "15%",
-            ],
-        },
+            {/* Excel Engine */}
+            <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="font-semibold text-gray-900">Interactive Sheet</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Follow the steps inside the Excel simulator
+              </p>
 
-        // TOTAL ROW
-        {
-            row: "6",
-            cells: [
-            "Lecture Total",
-            "",
-            "100%",
-            "Lab Total",
-            "",
-            "100%",
-            ],
-        },
+              <div className="mt-4">
+                <ExcelEngine steps={steps} initialData={initialData} />
+              </div>
+            </div>
 
-        // FINAL GRADE ROW
-        {
-            row: "7",
-            cells: [
-            "Final Grade",
-            ],
-        },
-        ]}
-
-        tableMaxWidth="max-w-2xl"
-
-        placeholder="Enter Excel formula or final grade"
-
-        hintBody={
-            <>
-                Step 1: Compute Lecture Grade
-                <br />
-                <code>=SUMPRODUCT(B2:B5,C2:C5)</code>
-
-                <br /><br />
-
-                Step 2: Compute Laboratory Grade
-                <br />
-                <code>=SUMPRODUCT(E2:E5,F2:F5)</code>
-
-                <br /><br />
-
-                Step 3: Compute Final Grade
-                <br />
-                <code>=(B6*60%)+(E6*40%)</code>
-            </>
-        }
-
-        onCheck={(answer) => {
-            const raw = answer.trim();
-            const norm = normalize(raw);
-
-            if (acceptedFormulas.includes(norm)) {
-            setStep(2);
-            return {
-                ok: true,
-                message: "Great! You're using SUMPRODUCT correctly.",
-            };
-            }
-
-            const num = parseFloat(raw);
-
-            if (!isNaN(num) && Math.abs(num - finalGrade) < 0.5) {
-            setStep(3);
-            return {
-                ok: true,
-                message: `🎉 Correct! Final Grade = ${finalGrade}`,
-            };
-            }
-
-            return {
-            ok: false,
-            message:
-                "Not quite. Try computing Lecture and Laboratory grades first using SUMPRODUCT.",
-            };
-        }}
-        />
-    );
+            {/* Hint */}
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <p className="font-semibold text-emerald-800">Hint</p>
+              <code className="block mt-2 text-sm bg-white border rounded px-3 py-2">
+                {'=B3-B2'}
+              </code>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
+  );
 }

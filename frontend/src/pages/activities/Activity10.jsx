@@ -1,47 +1,110 @@
 import React from "react";
-import ActivityPage from "./ActivityPage";
+import Navbar from "../../components/Navbar";
+import { Link } from "react-router-dom";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-const norm = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
+import ExcelEngine from "../../components/ExcelEngine";
 
-export default function Activity10() {
-  // From Jan 15, 2025 to Mar 1, 2024 is -320 days (date is in the past)
-  const expected = "-320";
+/* ---------- Pill ---------- */
+function Pill({ children, tone = "gray" }) {
+  const tones = {
+    gray: "bg-gray-100 text-gray-700 border-gray-200",
+    emerald: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    amber: "bg-amber-50 text-amber-800 border-amber-200",
+    rose: "bg-rose-50 text-rose-800 border-rose-200",
+  };
 
   return (
-    <ActivityPage
-      no={10}
-      title= "Date Calculation"
-      tip="Use date functions to calculate the number of days between dates."
-      difficulty="Medium"
-      subtitle="Date Calculation"
-      scenario={
-        <>
-          If today is <span className="font-semibold">January 15, 2025</span>, how many days until{" "}
-          <span className="font-semibold">March 1, 2024</span>?
-        </>
-      }
-      letters={["A", "B"]}
-      sheetHeaders={["Date", "Value"]}
-      rows={[
-        { row: "2", cells: ["Today", "1/15/2025"] },
-        { row: "3", cells: ["Target Date", "3/1/2024"] },
-      ]}
-      tableMaxWidth="max-w-xl"
-      placeholder='Type your formula or answer (e.g., =B3-B2 or -320)'
-      hintBody={
-        <>
-          Subtract dates: <span className="font-mono">Target - Today</span>. If the target is earlier,
-          the result will be negative.
-        </>
-      }
-      hintFormula={`=B3-B2`}
-      onCheck={(ans) => {
-        const a = norm(ans);
-        const ok = a.includes(expected) || a.includes("b3-b2") || a.includes("date(");
-        return ok
-          ? { ok: true, message: "Correct! The result is -320 days (the target date is in the past)." }
-          : { ok: false, message: "Not quite. Do Target Date minus Today (B3 - B2)." };
-      }}
-    />
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}>
+      {children}
+    </span>
+  );
+}
+
+function difficultyTone(difficulty) {
+  if (difficulty === "Medium") return "amber";
+  if (difficulty === "Hard") return "rose";
+  return "gray";
+}
+
+const initialData = [
+  ["Label", "Date", "", "", ""],
+  ["Today", "1/15/2025", "", "", ""],
+  ["Target", "3/1/2024", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+];
+
+const steps = [
+  { instruction: "Select cell B4", action: "select-cell", target: "B4" },
+  { instruction: "Type =B3-B2", action: "formula" },
+];
+
+export default function Activity10() {
+  return (
+    <>
+      <Navbar />
+
+      <div className="min-h-screen bg-gray-50">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-6 pb-28">
+          <main>
+            {/* Back */}
+            <Link
+              to="/activities"
+              className="inline-flex items-center gap-2 text-sm text-primary hover:text-gray-900 font-semibold"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+              Back to all activities
+            </Link>
+
+            {/* Title */}
+            <div className="mt-4">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  Activity 10: Date Calculatio
+                </h1>
+                <Pill tone={difficultyTone("Medium")}>Medium</Pill>
+              </div>
+
+              <p className="text-sm text-gray-600 mt-1">
+                Use date functions to calculate the number of days between dates.
+              </p>
+            </div>
+
+            {/* Scenario */}
+            <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-l-4 border-emerald-600 p-5">
+                <p className="font-semibold text-gray-900">Scenario</p>
+                <div className="mt-2 text-sm text-gray-600">
+                  Subtract dates: <span className="font-mono">Target - Today</span>. If the target is earlier,
+                  the result will be negative.
+                </div>
+              </div>
+            </div>
+
+            {/* Excel Engine */}
+            <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="font-semibold text-gray-900">Interactive Sheet</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Follow the steps inside the Excel simulator
+              </p>
+
+              <div className="mt-4">
+                <ExcelEngine steps={steps} initialData={initialData} />
+              </div>
+            </div>
+
+            {/* Hint */}
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <p className="font-semibold text-emerald-800">Hint</p>
+              <code className="block mt-2 text-sm bg-white border rounded px-3 py-2">
+                {'=B3-B2'}
+              </code>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
   );
 }
