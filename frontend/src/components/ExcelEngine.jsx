@@ -1441,6 +1441,15 @@ export default function ExcelEngine({ steps = [], initialData = null }) {
                     className="flex-1 border-0 outline-none bg-transparent px-2 py-1 font-mono text-sm"
                     placeholder="Enter a value or formula (e.g., =SUM(A1:A5))"
                 />
+                <button
+                    onClick={() => {
+                        setFormulaBar('=IF(B2>=60,"Pass","Fail")');
+                        validate("formula");
+                    }}
+                    className="px-3 py-1 text-xs bg-emerald-100 hover:bg-emerald-200 rounded"
+                >
+                    IF Example
+                </button>
             </div>
 
             {showFind && (

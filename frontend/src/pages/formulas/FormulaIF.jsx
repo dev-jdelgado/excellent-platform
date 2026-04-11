@@ -26,10 +26,8 @@ function MonoBox({ children }) {
 
 export default function FormulaIF() {
     const steps = [
-        "Write a logical test (ex: B2>=60)",
-        "Choose what to return when TRUE (ex: \"Pass\")",
-        "Choose what to return when FALSE (ex: \"Fail\")",
-        "Press Enter and copy down if needed",
+        "Select cell C2",
+        "Type =IF(B2>=60,\"Pass\",\"Fail\")",
     ];
 
     const tips = [

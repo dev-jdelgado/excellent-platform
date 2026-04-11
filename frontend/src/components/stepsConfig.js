@@ -99,10 +99,9 @@ export const excelSteps = {
         { instruction: "Select result cell (B5)", action: "select-cell", target: "B5" },
         { instruction: 'Type =COUNTIF(B2:B4,">80")', action: "formula" },
     ],
-
+    
     IF: [
-        { instruction: "Click Formulas tab", action: "click-tab", target: "formulas" },
-        { instruction: "Select result cell (C2)", action: "select-cell", target: "C2" },
+        { instruction: "Select cell C2", action: "select-cell", target: "C2" },
         { instruction: 'Type =IF(B2>=60,"Pass","Fail")', action: "formula" },
     ],
 
