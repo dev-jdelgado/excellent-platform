@@ -82,6 +82,33 @@ export default function DataManagementFilterData() {
                             <ExcelEngine steps={excelSteps.filterData} />
                         </div>
 
+                        <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+                            <div className="flex items-start gap-2">
+                                <CheckCircleIcon className="h-6 w-6 text-emerald-700" />
+                                <div>
+                                    <p className="font-semibold text-gray-900">Video Tutorial</p>
+                                    <p className="text-sm text-gray-600">
+                                        Watch a step-by-step demonstration of how to sort data in Excel.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 rounded-xl overflow-hidden border border-gray-200">
+                                <video
+                                    controls
+                                    className="w-full rounded-xl"
+                                    preload="metadata"
+                                >
+                                    <source src="/videos/SORTING AND FILTERING.mov"  type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+
+                            <div className="mt-4 text-sm text-gray-600">
+                                Follow along in Excel while watching the tutorial for hands-on practice.
+                            </div>
+                        </div>
+
                         <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
                             <p className="font-semibold text-gray-900">Tips &amp; Best Practices</p>
                             <ul className="mt-3 space-y-2 text-sm text-gray-700">
