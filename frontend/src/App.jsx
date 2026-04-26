@@ -6,7 +6,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import Splash from "./components/Splash";
-import PreAssessment from "./components/PreAssessment";
+// import PreAssessment from "./components/PreAssessment";
 
 // EXCEL TOOLS LESSONS
 import FileOperations from "./pages/modules/FileOperations";
@@ -78,66 +78,66 @@ function App() {
 
 
       {/* EXCEL TOOLS LESSONS */}
-      <Route path="/excel-tools" element={<PrivateRoute requirePreAssessment><Dashboard /></PrivateRoute>} />
+      <Route path="/excel-tools" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
 
-      <Route path="/excel-tools/file-operations" element={<PrivateRoute requirePreAssessment><FileOperations /></PrivateRoute>} />
-      <Route path="/excel-tools/file-operations/new-workbook" element={<PrivateRoute requirePreAssessment><FileOperationsNewWorkbook /></PrivateRoute>} />
-      <Route path="/excel-tools/file-operations/save-export" element={<PrivateRoute requirePreAssessment><FileOperationsSaveExport /></PrivateRoute>} />
+      <Route path="/excel-tools/file-operations" element={<PrivateRoute><FileOperations /></PrivateRoute>} />
+      <Route path="/excel-tools/file-operations/new-workbook" element={<PrivateRoute><FileOperationsNewWorkbook /></PrivateRoute>} />
+      <Route path="/excel-tools/file-operations/save-export" element={<PrivateRoute><FileOperationsSaveExport /></PrivateRoute>} />
 
-      <Route path="/excel-tools/edit-modify" element={<PrivateRoute requirePreAssessment><EditAndModify /></PrivateRoute>} />
-      <Route path="/excel-tools/edit-modify/copy-paste" element={<PrivateRoute requirePreAssessment><EditAndModifyCopyPaste /></PrivateRoute>} />
-      <Route path="/excel-tools/edit-modify/find-replace" element={<PrivateRoute requirePreAssessment><EditAndModifyFindReplace /></PrivateRoute>} />
+      <Route path="/excel-tools/edit-modify" element={<PrivateRoute><EditAndModify /></PrivateRoute>} />
+      <Route path="/excel-tools/edit-modify/copy-paste" element={<PrivateRoute><EditAndModifyCopyPaste /></PrivateRoute>} />
+      <Route path="/excel-tools/edit-modify/find-replace" element={<PrivateRoute><EditAndModifyFindReplace /></PrivateRoute>} />
 
-      <Route path="/excel-tools/view-options" element={<PrivateRoute requirePreAssessment><ViewOptions /></PrivateRoute>} />
-      <Route path="/excel-tools/view-options/freeze-panes" element={<PrivateRoute requirePreAssessment><ViewOptionsFreezePanes /></PrivateRoute>} />
-      <Route path="/excel-tools/view-options/zoom-controls" element={<PrivateRoute requirePreAssessment><ViewOptionsZoomControls /></PrivateRoute>} />
+      <Route path="/excel-tools/view-options" element={<PrivateRoute><ViewOptions /></PrivateRoute>} />
+      <Route path="/excel-tools/view-options/freeze-panes" element={<PrivateRoute><ViewOptionsFreezePanes /></PrivateRoute>} />
+      <Route path="/excel-tools/view-options/zoom-controls" element={<PrivateRoute><ViewOptionsZoomControls /></PrivateRoute>} />
 
-      <Route path="/excel-tools/data-management" element={<PrivateRoute requirePreAssessment><DataManagement /></PrivateRoute>} />
-      <Route path="/excel-tools/data-management/sort-data" element={<PrivateRoute requirePreAssessment><DataManagementSortData /></PrivateRoute>} />
-      <Route path="/excel-tools/data-management/filter-data" element={<PrivateRoute requirePreAssessment><DataManagementFilterData /></PrivateRoute>} />
-      <Route path="/excel-tools/data-management/remove-duplicates" element={<PrivateRoute requirePreAssessment><DataManagementRemoveDuplicates /></PrivateRoute>} />
+      <Route path="/excel-tools/data-management" element={<PrivateRoute><DataManagement /></PrivateRoute>} />
+      <Route path="/excel-tools/data-management/sort-data" element={<PrivateRoute><DataManagementSortData /></PrivateRoute>} />
+      <Route path="/excel-tools/data-management/filter-data" element={<PrivateRoute><DataManagementFilterData /></PrivateRoute>} />
+      <Route path="/excel-tools/data-management/remove-duplicates" element={<PrivateRoute><DataManagementRemoveDuplicates /></PrivateRoute>} />
 
-      <Route path="/excel-tools/formula-tools" element={<PrivateRoute requirePreAssessment><FormulaTools /></PrivateRoute>} />
-      <Route path="/excel-tools/formula-tools/insert-function" element={<PrivateRoute requirePreAssessment><FormulaToolsInsertFunction /></PrivateRoute>} />
-      <Route path="/excel-tools/formula-tools/formula-auditing" element={<PrivateRoute requirePreAssessment><FormulaToolsFormulaAuditing /></PrivateRoute>} />
+      <Route path="/excel-tools/formula-tools" element={<PrivateRoute><FormulaTools /></PrivateRoute>} />
+      <Route path="/excel-tools/formula-tools/insert-function" element={<PrivateRoute><FormulaToolsInsertFunction /></PrivateRoute>} />
+      <Route path="/excel-tools/formula-tools/formula-auditing" element={<PrivateRoute><FormulaToolsFormulaAuditing /></PrivateRoute>} />
 
-      <Route path="/excel-tools/insert-elements" element={<PrivateRoute requirePreAssessment><InsertElements /></PrivateRoute>} />
-      <Route path="/excel-tools/insert-elements/insert-table" element={<PrivateRoute requirePreAssessment><InsertElementsInsertTable /></PrivateRoute>} />
-      <Route path="/excel-tools/insert-elements/insert-chart" element={<PrivateRoute requirePreAssessment><InsertElementsInsertChart /></PrivateRoute>} />
+      <Route path="/excel-tools/insert-elements" element={<PrivateRoute><InsertElements /></PrivateRoute>} />
+      <Route path="/excel-tools/insert-elements/insert-table" element={<PrivateRoute><InsertElementsInsertTable /></PrivateRoute>} />
+      <Route path="/excel-tools/insert-elements/insert-chart" element={<PrivateRoute><InsertElementsInsertChart /></PrivateRoute>} />
 
-      <Route path="/excel-tools/formatting" element={<PrivateRoute requirePreAssessment><Formatting /></PrivateRoute>} />
-      <Route path="/excel-tools/formatting/cell-formatting" element={<PrivateRoute requirePreAssessment><FormattingCellFormatting /></PrivateRoute>} />
-      <Route path="/excel-tools/formatting/conditional-formatting" element={<PrivateRoute requirePreAssessment><FormattingConditionalFormatting /></PrivateRoute>} /> 
+      <Route path="/excel-tools/formatting" element={<PrivateRoute><Formatting /></PrivateRoute>} />
+      <Route path="/excel-tools/formatting/cell-formatting" element={<PrivateRoute><FormattingCellFormatting /></PrivateRoute>} />
+      <Route path="/excel-tools/formatting/conditional-formatting" element={<PrivateRoute><FormattingConditionalFormatting /></PrivateRoute>} /> 
 
 
       {/* FORMULA LESSONS */}
-      <Route path="/formulas" element={<PrivateRoute requirePreAssessment><Formulas /></PrivateRoute>} />
-      <Route path="/formulas/sum" element={<PrivateRoute requirePreAssessment><FormulaSUM /></PrivateRoute>} />
-      <Route path="/formulas/average" element={<PrivateRoute requirePreAssessment><FormulaAVERAGE /></PrivateRoute>} />
-      <Route path="/formulas/if" element={<PrivateRoute requirePreAssessment><FormulaIF /></PrivateRoute>} />
-      <Route path="/formulas/vlookup" element={<PrivateRoute requirePreAssessment><FormulaVLOOKUP /></PrivateRoute>} />
-      <Route path="/formulas/concat" element={<PrivateRoute requirePreAssessment><FormulaCONCAT /></PrivateRoute>} />
-      <Route path="/formulas/countif" element={<PrivateRoute requirePreAssessment><FormulaCOUNTIF /></PrivateRoute>} />
+      <Route path="/formulas" element={<PrivateRoute><Formulas /></PrivateRoute>} />
+      <Route path="/formulas/sum" element={<PrivateRoute><FormulaSUM /></PrivateRoute>} />
+      <Route path="/formulas/average" element={<PrivateRoute><FormulaAVERAGE /></PrivateRoute>} />
+      <Route path="/formulas/if" element={<PrivateRoute><FormulaIF /></PrivateRoute>} />
+      <Route path="/formulas/vlookup" element={<PrivateRoute><FormulaVLOOKUP /></PrivateRoute>} />
+      <Route path="/formulas/concat" element={<PrivateRoute><FormulaCONCAT /></PrivateRoute>} />
+      <Route path="/formulas/countif" element={<PrivateRoute><FormulaCOUNTIF /></PrivateRoute>} />
 
 
       {/* ACTIVITIES */}
-      <Route path="/activities" element={<PrivateRoute requirePreAssessment><Activities /></PrivateRoute>} />
-      <Route path="/activities/1" element={<PrivateRoute requirePreAssessment> <Activity1 /> </PrivateRoute>} />
-      <Route path="/activities/2" element={<PrivateRoute requirePreAssessment><Activity2 /></PrivateRoute>} />
-      <Route path="/activities/3" element={<PrivateRoute requirePreAssessment><Activity3 /></PrivateRoute>} />
-      <Route path="/activities/4" element={<PrivateRoute requirePreAssessment><Activity4 /></PrivateRoute>} />
-      <Route path="/activities/5" element={<PrivateRoute requirePreAssessment><Activity5 /></PrivateRoute>} />
-      <Route path="/activities/6" element={<PrivateRoute requirePreAssessment><Activity6 /></PrivateRoute>} />
-      <Route path="/activities/7" element={<PrivateRoute requirePreAssessment><Activity7 /></PrivateRoute>} />
-      <Route path="/activities/8" element={<PrivateRoute requirePreAssessment><Activity8 /></PrivateRoute>} />
-      <Route path="/activities/9" element={<PrivateRoute requirePreAssessment><Activity9 /></PrivateRoute>} />
-      <Route path="/activities/10" element={<PrivateRoute requirePreAssessment><Activity10 /></PrivateRoute>} />
-      <Route path="/activities/11" element={<PrivateRoute requirePreAssessment><Activity11 /></PrivateRoute>} />
+      <Route path="/activities" element={<PrivateRoute><Activities /></PrivateRoute>} />
+      <Route path="/activities/1" element={<PrivateRoute> <Activity1 /> </PrivateRoute>} />
+      <Route path="/activities/2" element={<PrivateRoute><Activity2 /></PrivateRoute>} />
+      <Route path="/activities/3" element={<PrivateRoute><Activity3 /></PrivateRoute>} />
+      <Route path="/activities/4" element={<PrivateRoute><Activity4 /></PrivateRoute>} />
+      <Route path="/activities/5" element={<PrivateRoute><Activity5 /></PrivateRoute>} />
+      <Route path="/activities/6" element={<PrivateRoute><Activity6 /></PrivateRoute>} />
+      <Route path="/activities/7" element={<PrivateRoute><Activity7 /></PrivateRoute>} />
+      <Route path="/activities/8" element={<PrivateRoute><Activity8 /></PrivateRoute>} />
+      <Route path="/activities/9" element={<PrivateRoute><Activity9 /></PrivateRoute>} />
+      <Route path="/activities/10" element={<PrivateRoute><Activity10 /></PrivateRoute>} />
+      <Route path="/activities/11" element={<PrivateRoute><Activity11 /></PrivateRoute>} />
 
 
       <Route path="/videos" element={<PrivateRoute><VideoTutorials /></PrivateRoute>} />
 
-      <Route path="/pre-assessment" element={<PrivateRoute><PreAssessment /></PrivateRoute>} />
+      {/* <Route path="/pre-assessment" element={<PrivateRoute><PreAssessment /></PrivateRoute>} /> */}
       <Route path="*" element={<Navigate to="/excel-tools" />} />
     </Routes>
   );
